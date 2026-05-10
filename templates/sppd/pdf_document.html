@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 22mm 18mm 18mm;
+        }
+
+        body {
+            color: #111827;
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.35;
+        }
+
+        .kop {
+            display: table;
+            width: 100%;
+            border-bottom: 4px double #660300;
+            padding-bottom: 10px;
+            margin-bottom: 24px;
+        }
+
+        .kop-logo,
+        .kop-text {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .kop-logo {
+            width: 72px;
+            text-align: center;
+        }
+
+        .logo-box {
+            width: 56px;
+            height: 56px;
+            border: 2px solid #660300;
+            border-radius: 50%;
+            color: #660300;
+            display: inline-block;
+            font-size: 10pt;
+            font-weight: bold;
+            line-height: 56px;
+            text-align: center;
+        }
+
+        .kop-text {
+            text-align: center;
+        }
+
+        .kop-title {
+            color: #660300;
+            font-size: 15pt;
+            font-weight: bold;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        .kop-subtitle {
+            font-size: 13pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .kop-address {
+            font-size: 10pt;
+        }
+
+        h1 {
+            font-size: 14pt;
+            margin: 0 0 2px;
+            text-align: center;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+
+        .doc-number {
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .meta td {
+            padding: 3px 0;
+            vertical-align: top;
+        }
+
+        .meta .label {
+            width: 170px;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #374151;
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+
+        .data-table th {
+            background: #f8f1f1;
+            color: #660300;
+            text-align: left;
+        }
+
+        .section-title {
+            color: #660300;
+            font-weight: bold;
+            margin: 16px 0 6px;
+            text-transform: uppercase;
+        }
+
+        .section-list {
+            margin: 0;
+            padding-left: 24px;
+            line-height: 1.6;
+        }
+
+        .section-list li {
+            margin-bottom: 8px;
+        }
+
+        .section-paragraph {
+            margin: 0 0 18px;
+            text-align: justify;
+            text-indent: 30px;
+        }
+
+        .label-block {
+            margin: 12px 0 4px;
+            font-weight: bold;
+        }
+
+        .member-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .member-table th,
+        .member-table td {
+            border: 1px solid #374151;
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+
+        .meta td {
+            padding: 3px 0;
+            vertical-align: top;
+        }
+
+        .meta .label {
+            width: 170px;
+        }
+
+        .signature {
+            margin-top: 42px;
+            margin-left: auto;
+            text-align: center;
+            width: 260px;
+        }
+
+        .signature-space {
+            height: 64px;
+        }
+    </style>
+</head>
+<body>
+    <header class="kop">
+        <div class="kop-logo">
+            <span class="logo-box">KPU</span>
+        </div>
+        <div class="kop-text">
+            <div class="kop-title">Komisi Pemilihan Umum</div>
+            <div class="kop-subtitle">Kabupaten Tolitoli</div>
+            <div class="kop-address">Jl. S. Parman No. 65, Tolitoli, Sulawesi Tengah</div>
+        </div>
+    </header>
+
+    <h1>{{ title }}</h1>
+    <div class="doc-number">Nomor: {{ nomor_dokumen }}</div>
+
+    {% if jenis == 'surat-tugas' %}
+        {% if sppd.menimbang_list.exists %}
+            <div class="section-title">Menimbang</div>
+            <ol class="section-list" type="a">
+                {% for item in sppd.menimbang_list.all %}
+                    <li>{{ item.isi }}</li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+
+        {% if sppd.dasar_list.exists %}
+            <div class="section-title">Dasar</div>
+            <ol class="section-list" type="1">
+                {% for item in sppd.dasar_list.all %}
+                    <li>{{ item.isi }}</li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+
+        <div class="label-block">Memberi Tugas Kepada:</div>
+        <table class="member-table">
+            <thead>
+                <tr>
+                    <th style="width: 32px;">No</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for peserta in peserta_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ peserta.pegawai }}</td>
+                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="label-block">Untuk</div>
+        <p class="section-paragraph">{{ sppd.untuk }}{% if sppd.tujuan %} di {{ sppd.tujuan }}{% endif %}{% if sppd.tanggal_berangkat and sppd.tanggal_kembali %} selama {{ sppd.lama_perjalanan }} hari, tanggal {{ sppd.tanggal_berangkat|date:"d" }} s.d. {{ sppd.tanggal_kembali|date:"d F Y" }}{% endif %}.</p>
+    {% elif jenis == 'surat-perjalanan-dinas' %}
+        <table class="meta">
+            <tr><td class="label">Pejabat yang memberi perintah</td><td>: Ketua KPU Kabupaten Tolitoli</td></tr>
+            <tr><td class="label">Maksud perjalanan dinas</td><td>: {{ sppd.untuk }}</td></tr>
+            <tr><td class="label">Alat angkutan</td><td>: {{ sppd.alat_angkutan }}</td></tr>
+            <tr><td class="label">Tempat tujuan</td><td>: {{ sppd.tujuan }}</td></tr>
+            <tr><td class="label">Tanggal berangkat</td><td>: {{ sppd.tanggal_berangkat|date:"d F Y" }}</td></tr>
+            <tr><td class="label">Tanggal kembali</td><td>: {{ sppd.tanggal_kembali|date:"d F Y" }}</td></tr>
+            <tr><td class="label">Lama perjalanan</td><td>: {{ sppd.lama_perjalanan }} hari</td></tr>
+        </table>
+
+        <div class="section-title">Pegawai yang melaksanakan perjalanan</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 32px;">No</th>
+                    <th>Nama</th>
+                    <th>Pangkat/Golongan</th>
+                    <th>Jabatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for peserta in peserta_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ peserta.pegawai }}</td>
+                        <td>{{ peserta.pegawai.pangkat|default:"-" }} / {{ peserta.pegawai.golongan|default:"-" }}</td>
+                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif jenis == 'lampiran' %}
+        <div class="section-title">Lampiran Surat Tugas</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 32px;">No</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for peserta in peserta_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ peserta.pegawai }}</td>
+                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
+                        <td>{{ sppd.tujuan }}, {{ sppd.tanggal_berangkat|date:"d M Y" }} - {{ sppd.tanggal_kembali|date:"d M Y" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="section-title">Rincian Biaya</div>
+        {% for peserta in peserta_list %}
+            <p><strong>{{ peserta.pegawai }}</strong></p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Jenis</th>
+                        <th>Uraian</th>
+                        <th style="width: 130px;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in peserta.rincian_items %}
+                        <tr>
+                            <td>{{ item.get_jenis_biaya_display }}</td>
+                            <td>{{ item.uraian }}</td>
+                            <td>Rp {{ item.jumlah|floatformat:0 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">Belum ada rincian biaya.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% endif %}
+
+    {% if jenis == 'surat-tugas' %}
+        <p>Demikian surat tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.</p>
+    {% else %}
+        <p>Demikian dokumen ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
+    {% endif %}
+
+    <div class="signature">
+        <div>Tolitoli, {{ today|date:"d F Y" }}</div>
+        <div>Ketua KPU Kabupaten Tolitoli</div>
+        <div class="signature-space"></div>
+        <div><strong>________________________</strong></div>
+    </div>
+</body>
+</html>

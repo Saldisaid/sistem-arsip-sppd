@@ -1,0 +1,83 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+{% if messages %}
+ <div class="mb-4 grid gap-2">
+ {% for message in messages %}
+ <p class="m-0 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-800">{{ message }}</p>
+ {% endfor %}
+ </div>
+{% endif %}
+
+<section class="rounded-lg border border-slate-300 bg-white p-5">
+ <p class="m-0 text-sm text-slate-500">{{ sppd_pegawai.sppd.nomor_surat_tugas }}</p>
+ <h2 class="m-0 mt-1 text-xl font-bold">{{ sppd_pegawai.pegawai }}</h2>
+ {% if rincian_item %}
+ <p class="m-0 mt-2 text-sm font-medium text-[#660300]">Mode edit: {{ rincian_item.get_jenis_biaya_display }} - {{ rincian_item.uraian }}</p>
+ {% endif %}
+</section>
+
+<form class="mt-4 grid gap-4 rounded-lg border border-slate-300 bg-white p-5" method="post" novalidate>
+ {% csrf_token %}
+ <div class="grid gap-4 lg:grid-cols-2">
+ {% for field in form %}
+ <div>
+ <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+ {% if field.name == 'wajib_upload' %}
+ <div class="flex min-h-11 items-center gap-2 rounded-lg border border-slate-300 px-3">
+ {{ field }}
+ <span class="text-sm text-slate-600">Ya</span>
+ </div>
+ {% else %}
+ {{ field }}
+ {% endif %}
+ {% if field.errors %}
+ <p class="mt-1.5 text-sm text-red-700">{{ field.errors|striptags }}</p>
+ {% endif %}
+ </div>
+ {% endfor %}
+ </div>
+ <div class="flex justify-end gap-3">
+ <a class="inline-grid min-h-11 place-items-center rounded-lg border border-slate-300 bg-white px-5 font-bold text-slate-700 hover:border-slate-400" href="{% url 'sppd:sppd_detail' sppd_pegawai.sppd.id %}">Kembali</a>
+ <button class="min-h-11 rounded-lg border-0 bg-[#660300] px-5 font-bold text-white hover:bg-[#4f0200]" type="submit">
+ {% if rincian_item %}Simpan Perubahan{% else %}Tambah Rincian{% endif %}
+ </button>
+ </div>
+</form>
+
+<section class="mt-4 rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h3 class="m-0 text-lg font-bold">Rincian Biaya</h3>
+ </div>
+ <div class="overflow-x-auto">
+ <table class="w-full border-collapse">
+ <thead>
+ <tr>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Jenis</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Uraian</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Jumlah</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Dokumen</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Aksi</th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in item_list %}
+ <tr>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.get_jenis_biaya_display }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.uraian }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">Rp {{ item.jumlah|floatformat:0 }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.jumlah_dokumen }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'rincian:rincian_edit' sppd_pegawai.id item.id %}">Edit</a>
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td class="p-5 text-slate-500" colspan="5">Belum ada rincian biaya.</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+</section>
+{% endblock %}

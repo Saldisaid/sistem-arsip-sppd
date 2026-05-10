@@ -1,0 +1,78 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<form class="grid gap-4" method="post" novalidate>
+ {% csrf_token %}
+ {{ menimbang_formset.management_form }}
+ {{ dasar_formset.management_form }}
+
+ <section class="rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h2 class="m-0 text-lg font-bold">Tambah SPPD</h2>
+ <p class="m-0 mt-1 text-sm text-slate-500">Lengkapi data dasar perjalanan dinas.</p>
+ </div>
+
+ {% if form.non_field_errors %}
+ <div class="border-b border-slate-300 bg-amber-50 px-5 py-3 text-sm text-amber-800">
+ {{ form.non_field_errors }}
+ </div>
+ {% endif %}
+
+ <div class="grid gap-4 p-5 lg:grid-cols-2">
+ <div class="lg:col-span-2">
+ <h3 class="text-lg font-bold">Menimbang</h3>
+ <p class="m-0 text-sm text-slate-500">Tuliskan poin-poin menimbang sesuai format surat tugas.</p>
+ </div>
+ {% for mform in menimbang_formset.forms %}
+ <div class="lg:col-span-2">
+ <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ mform.isi.id_for_label }}">{{ mform.isi.label }}</label>
+ {{ mform.isi }}
+ {% if mform.isi.errors %}
+ <p class="mt-1.5 text-sm text-red-700">{{ mform.isi.errors|striptags }}</p>
+ {% endif %}
+ </div>
+ {% endfor %}
+
+ <div class="lg:col-span-2">
+ <h3 class="text-lg font-bold">Dasar</h3>
+ <p class="m-0 text-sm text-slate-500">Tuliskan dasar penugasan sesuai format surat tugas.</p>
+ </div>
+ {% for dform in dasar_formset.forms %}
+ <div class="lg:col-span-2">
+ <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ dform.isi.id_for_label }}">{{ dform.isi.label }}</label>
+ {{ dform.isi }}
+ {% if dform.isi.errors %}
+ <p class="mt-1.5 text-sm text-red-700">{{ dform.isi.errors|striptags }}</p>
+ {% endif %}
+ </div>
+ {% endfor %}
+
+ {% for field in form %}
+ <div class="{% if field.name == 'untuk' %}lg:col-span-2{% endif %}">
+ <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+ {% if field.name == 'pegawai' %}
+ <div class="grid max-h-64 gap-2 overflow-y-auto rounded-lg border border-slate-300 bg-slate-50 p-3 sm:grid-cols-2">
+ {% for checkbox in field %}
+ <label class="flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm text-slate-700">
+ {{ checkbox.tag }}
+ <span>{{ checkbox.choice_label }}</span>
+ </label>
+ {% endfor %}
+ </div>
+ {% else %}
+ {{ field }}
+ {% endif %}
+ {% if field.errors %}
+ <p class="mt-1.5 text-sm text-red-700">{{ field.errors|striptags }}</p>
+ {% endif %}
+ </div>
+ {% endfor %}
+ </div>
+ </section>
+
+ <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+ <a class="inline-grid min-h-11 place-items-center rounded-lg border border-slate-300 bg-white px-5 font-bold text-slate-700 hover:border-slate-400" href="{% url 'sppd:sppd' %}">Batal</a>
+ <button class="min-h-11 rounded-lg border-0 bg-[#660300] px-5 font-bold text-white hover:bg-[#4f0200]" type="submit">Simpan SPPD</button>
+ </div>
+</form>
+{% endblock %}

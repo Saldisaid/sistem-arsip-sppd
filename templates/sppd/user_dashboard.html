@@ -1,0 +1,54 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<section class="rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h2 class="m-0 text-lg font-bold">Perjalanan Dinas Saya</h2>
+ <p class="m-0 mt-1 text-sm text-slate-500">Daftar SPPD yang ditugaskan kepada akun ini.</p>
+ </div>
+ <div class="overflow-x-auto">
+ <table class="w-full border-collapse">
+ <thead>
+ <tr>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor ST</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor SPPD</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tujuan</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tanggal</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Kelengkapan</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Aksi</th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in perjalanan_list %}
+ <tr>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3 font-medium">{{ item.sppd.nomor_surat_tugas }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.sppd.nomor_sppd|default:"-" }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.sppd.tujuan }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.sppd.tanggal_berangkat|date:"d M Y" }} - {{ item.sppd.tanggal_kembali|date:"d M Y" }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ {% if item.kelengkapan_progress.lengkap %}
+ <span class="inline-block rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-700">Lengkap</span>
+ {% else %}
+ <span class="inline-block rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700">Belum Lengkap</span>
+ {% endif %}
+ <span class="ml-2 text-sm text-slate-500">{{ item.kelengkapan_progress.label }}</span>
+ </td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <div class="flex gap-3">
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'dokumen:user_sppd_detail' item.id %}">Kelengkapan</a>
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'sppd:sppd_download' item.sppd.id 'surat-tugas' %}">Surat Tugas</a>
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'sppd:sppd_download' item.sppd.id 'surat-perjalanan-dinas' %}">SPPD</a>
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'sppd:sppd_download' item.sppd.id 'lampiran' %}">Lampiran</a>
+ </div>
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td class="p-5 text-slate-500" colspan="6">Belum ada perjalanan dinas untuk akun ini.</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+</section>
+{% endblock %}

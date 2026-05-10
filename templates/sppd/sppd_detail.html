@@ -1,0 +1,105 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<section class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+ <div class="rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h2 class="m-0 text-lg font-bold">{{ sppd.nomor_surat_tugas }}</h2>
+ <p class="m-0 mt-1 text-sm text-slate-500">{{ sppd.tujuan }} - {{ sppd.tanggal_berangkat|date:"d M Y" }} - {{ sppd.tanggal_kembali|date:"d M Y" }}</p>
+ </div>
+ <dl class="grid gap-4 p-5 sm:grid-cols-2">
+ <div>
+ <dt class="text-xs font-bold uppercase text-slate-500">Nomor SPPD</dt>
+ <dd class="m-0 mt-1">{{ sppd.nomor_sppd|default:"-" }}</dd>
+ </div>
+ <div>
+ <dt class="text-xs font-bold uppercase text-slate-500">Status</dt>
+ <dd class="m-0 mt-1">{{ sppd.get_status_display }}</dd>
+ </div>
+ <div>
+ <dt class="text-xs font-bold uppercase text-slate-500">Alat Angkutan</dt>
+ <dd class="m-0 mt-1">{{ sppd.alat_angkutan }}</dd>
+ </div>
+ <div>
+ <dt class="text-xs font-bold uppercase text-slate-500">Lama Perjalanan</dt>
+ <dd class="m-0 mt-1">{{ sppd.lama_perjalanan }} hari</dd>
+ </div>
+ <div class="sm:col-span-2">
+ <dt class="text-xs font-bold uppercase text-slate-500">Maksud Perjalanan</dt>
+ <dd class="m-0 mt-1">{{ sppd.untuk }}</dd>
+ </div>
+ </dl>
+ </div>
+
+ <div class="rounded-lg border border-slate-300 bg-white p-5">
+ <h3 class="m-0 text-base font-bold">Aksi Dokumen</h3>
+ <div class="mt-4 grid gap-2">
+ <a class="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 font-bold text-[#660300] hover:border-[#660300]" href="{% url 'sppd:sppd_download' sppd.id 'surat-tugas' %}">
+ <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M12 18v-6"/></svg>
+ <span>Surat Tugas</span>
+ </a>
+ <a class="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 font-bold text-[#660300] hover:border-[#660300]" href="{% url 'sppd:sppd_download' sppd.id 'surat-perjalanan-dinas' %}">
+ <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z"/></svg>
+ <span>SPPD</span>
+ </a>
+ <a class="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 font-bold text-[#660300] hover:border-[#660300]" href="{% url 'sppd:sppd_download' sppd.id 'lampiran' %}">
+ <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.44 11.05 12 20.49a6 6 0 0 1-8.49-8.49l9.44-9.44a4 4 0 0 1 5.66 5.66l-9.45 9.43a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+ <span>Lampiran</span>
+ </a>
+ </div>
+ </div>
+</section>
+
+<section class="mt-4 rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h3 class="m-0 text-lg font-bold">Pegawai Perjalanan Dinas</h3>
+ <p class="m-0 mt-1 text-sm text-slate-500">Klik kelengkapan untuk melihat dan mengunduh dokumen pegawai.</p>
+ </div>
+ <div class="overflow-x-auto">
+ <table class="w-full border-collapse">
+ <thead>
+ <tr>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nama</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Jabatan</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Kelengkapan</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Aksi</th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in pegawai_list %}
+ <tr>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3 font-medium">{{ item.pegawai }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.pegawai.jabatan|default:"-" }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <a class="inline-flex items-center gap-1.5 font-bold text-[#660300] hover:text-[#660300]" href="{% url 'dokumen:user_sppd_detail' item.id %}">
+ {% if item.kelengkapan_progress.lengkap %}
+ <span>Lengkap</span>
+ {% else %}
+ <span>Belum Lengkap</span>
+ {% endif %}
+ <span class="text-sm font-normal text-slate-500">({{ item.kelengkapan_progress.label }})</span>
+ </a>
+ </td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <div class="flex flex-wrap gap-3">
+ <a class="inline-flex items-center gap-1.5 font-bold text-[#660300] hover:text-[#660300]" href="{% url 'rincian:rincian_create' item.id %}">
+ <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+ <span>Isi Rincian</span>
+ </a>
+ <a class="inline-flex items-center gap-1.5 font-bold text-[#660300] hover:text-[#660300]" href="{% url 'rincian:rincian_download' item.id %}">
+ <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+ <span>Download Rincian</span>
+ </a>
+ </div>
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td class="p-5 text-slate-500" colspan="4">Belum ada pegawai untuk SPPD ini.</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+</section>
+{% endblock %}

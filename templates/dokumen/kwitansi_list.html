@@ -1,0 +1,71 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+{% if messages %}
+ <div class="mb-4 grid gap-2">
+ {% for message in messages %}
+ <p class="m-0 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-800">{{ message }}</p>
+ {% endfor %}
+ </div>
+{% endif %}
+
+<form class="grid gap-4 rounded-lg border border-slate-300 bg-white p-5" method="post" enctype="multipart/form-data" novalidate>
+ {% csrf_token %}
+ <div>
+ <h2 class="m-0 text-lg font-bold">Kwitansi SAKTI</h2>
+ <p class="m-0 mt-1 text-sm text-slate-500">{{ module_description }}</p>
+ </div>
+ <div class="grid gap-4 lg:grid-cols-3">
+ {% for field in form %}
+ <div>
+ <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+ {{ field }}
+ {% if field.errors %}
+ <p class="mt-1.5 text-sm text-red-700">{{ field.errors|striptags }}</p>
+ {% endif %}
+ </div>
+ {% endfor %}
+ </div>
+ <div class="flex justify-end">
+ <button class="min-h-11 rounded-lg border-0 bg-[#660300] px-5 font-bold text-white hover:bg-[#4f0200]" type="submit">Simpan Kwitansi</button>
+ </div>
+</form>
+
+<section class="mt-4 rounded-lg border border-slate-300 bg-white">
+ <div class="border-b border-slate-300 px-5 py-4">
+ <h3 class="m-0 text-lg font-bold">Arsip Kwitansi</h3>
+ </div>
+ <div class="overflow-x-auto">
+ <table class="w-full border-collapse">
+ <thead>
+ <tr>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">SPPD</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Upload</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">File</th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in kwitansi_list %}
+ <tr>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3 font-medium">{{ item.nomor_kwitansi }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.sppd.nomor_surat_tugas }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.uploaded_at|date:"d M Y" }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ {% if item.file_pdf %}
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{{ item.file_pdf.url }}" target="_blank">Buka PDF</a>
+ {% else %}
+ <span class="text-slate-500">Belum ada file</span>
+ {% endif %}
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td class="p-5 text-slate-500" colspan="4">Belum ada kwitansi SAKTI.</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+</section>
+{% endblock %}

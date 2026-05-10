@@ -1,0 +1,72 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+{% if messages %}
+ <div class="mb-4 grid gap-2">
+ {% for message in messages %}
+ <p class="m-0 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-800">{{ message }}</p>
+ {% endfor %}
+ </div>
+{% endif %}
+
+<section class="rounded-lg border border-slate-300 bg-white">
+ <div class="flex flex-col gap-3 border-b border-slate-300 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+ <div>
+ <h2 class="m-0 text-lg font-bold">Data SPPD</h2>
+ <p class="m-0 mt-1 text-sm text-slate-500">Daftar surat perjalanan dinas yang sudah dibuat.</p>
+ </div>
+ <a class="inline-grid min-h-10 place-items-center rounded-lg bg-[#660300] px-4 text-sm font-bold text-white hover:bg-[#4f0200]" href="{% url 'sppd:sppd_create' %}">Tambah SPPD</a>
+ </div>
+
+ <div class="overflow-x-auto">
+ <table class="w-full border-collapse">
+ <thead>
+ <tr>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor ST</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor SPPD</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Pegawai SPPD</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tujuan</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tanggal</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Status</th>
+ <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Aksi</th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in sppd_list %}
+ <tr>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3 font-medium">{{ item.nomor_surat_tugas }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.nomor_sppd|default:"-" }}</td>
+ <td class="border-b border-slate-300 px-5 py-3">
+ <div class="flex flex-wrap gap-1.5">
+ {% for peserta in item.pegawai_list.all %}
+ <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ peserta.pegawai }}</span>
+ {% empty %}
+ <span class="text-sm text-slate-500">Belum ada pegawai</span>
+ {% endfor %}
+ </div>
+ </td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.tujuan }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.tanggal_berangkat|date:"d M Y" }} - {{ item.tanggal_kembali|date:"d M Y" }}</td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <span class="inline-block min-w-20 rounded-full bg-teal-50 px-2.5 py-1 text-center text-xs font-bold text-teal-700">{{ item.get_status_display }}</span>
+ </td>
+ <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
+ <div class="flex flex-wrap items-center gap-3">
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'sppd:sppd_detail' item.id %}">Detail</a>
+ <form method="post" action="{% url 'sppd:sppd_delete' item.id %}" onsubmit="return confirm('Yakin hapus SPPD {{ item.nomor_surat_tugas|escapejs }}? Semua peserta, rincian, dan dokumen terkait akan ikut terhapus.');">
+ {% csrf_token %}
+ <button class="border-0 bg-transparent p-0 font-bold text-red-700 hover:text-red-800" type="submit">Hapus</button>
+ </form>
+ </div>
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td class="p-5 text-slate-500" colspan="7">Belum ada data SPPD.</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+</section>
+{% endblock %}
