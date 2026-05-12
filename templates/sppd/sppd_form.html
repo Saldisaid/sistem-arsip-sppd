@@ -48,7 +48,7 @@
  {% endfor %}
 
  {% for field in form %}
- <div class="{% if field.name == 'untuk' %}lg:col-span-2{% endif %}">
+ <div class="{% if field.name == 'untuk' or field.name == 'penandatangan' %}lg:col-span-2{% endif %}">
  <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
  {% if field.name == 'pegawai' %}
  <div class="grid max-h-64 gap-2 overflow-y-auto rounded-lg border border-slate-300 bg-slate-50 p-3 sm:grid-cols-2">

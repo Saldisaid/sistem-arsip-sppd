@@ -24,6 +24,17 @@
  <dt class="text-xs font-bold uppercase text-slate-500">Lama Perjalanan</dt>
  <dd class="m-0 mt-1">{{ sppd.lama_perjalanan }} hari</dd>
  </div>
+ {% if sppd.penandatangan %}
+ <div class="sm:col-span-2">
+ <dt class="text-xs font-bold uppercase text-slate-500">Penandatangan</dt>
+ <dd class="m-0 mt-1">
+ <div class="text-sm">
+ <div class="font-medium">{{ sppd.penandatangan.user.get_full_name|default:sppd.penandatangan.user.username }}</div>
+ <div class="text-slate-600">NIP: {{ sppd.penandatangan.user.username }}</div>
+ </div>
+ </dd>
+ </div>
+ {% endif %}
  <div class="sm:col-span-2">
  <dt class="text-xs font-bold uppercase text-slate-500">Maksud Perjalanan</dt>
  <dd class="m-0 mt-1">{{ sppd.untuk }}</dd>

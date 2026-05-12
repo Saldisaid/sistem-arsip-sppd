@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, formset_factory
 
 from accounts.models import Pegawai
 from rincian.models import RincianBiayaItem
@@ -43,22 +43,36 @@ class SPPDDasarForm(forms.ModelForm):
         fields = ('isi',)
 
 
-MenimbangFormSet = inlineformset_factory(
-    SPPD,
-    SPPDMenimbang,
-    form=SPPDMenimbangForm,
-    fields=('isi',),
+# Formset untuk create view (standalone, bukan inline)
+MenimbangFormSet = formset_factory(
+    SPPDMenimbangForm,
     extra=3,
     can_delete=False,
 )
 
-DasarFormSet = inlineformset_factory(
+DasarFormSet = formset_factory(
+    SPPDDasarForm,
+    extra=3,
+    can_delete=False,
+)
+
+# Inline formset untuk edit view
+MenimbangInlineFormSet = inlineformset_factory(
+    SPPD,
+    SPPDMenimbang,
+    form=SPPDMenimbangForm,
+    fields=('isi',),
+    extra=2,
+    can_delete=True,
+)
+
+DasarInlineFormSet = inlineformset_factory(
     SPPD,
     SPPDDasar,
     form=SPPDDasarForm,
     fields=('isi',),
-    extra=3,
-    can_delete=False,
+    extra=2,
+    can_delete=True,
 )
 
 
@@ -67,6 +81,13 @@ class SPPDForm(forms.ModelForm):
         queryset=Pegawai.objects.select_related('user').order_by('user__first_name', 'user__username'),
         label='Pegawai Perjalanan Dinas',
         widget=forms.CheckboxSelectMultiple,
+    )
+
+    penandatangan = forms.ModelChoiceField(
+        queryset=Pegawai.objects.select_related('user').order_by('user__first_name', 'user__username'),
+        label='Penandatangan',
+        required=False,
+        empty_label='-- Pilih Penandatangan --',
     )
 
     class Meta:
@@ -79,6 +100,7 @@ class SPPDForm(forms.ModelForm):
             'alat_angkutan',
             'tanggal_berangkat',
             'tanggal_kembali',
+            'penandatangan',
         )
         labels = {
             'nomor_surat_tugas': 'Nomor Surat Tugas',

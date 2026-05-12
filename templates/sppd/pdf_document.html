@@ -1,326 +1,1107 @@
-<!doctype html>
+{% load static %}
+
+<!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="utf-8">
+
+    <meta charset="UTF-8">
+
+    <title>{{ title }}</title>
+
     <style>
+
+        /* =========================================
+           PAGE
+        ========================================== */
+
         @page {
             size: A4;
-            margin: 22mm 18mm 18mm;
+            margin-top: 2cm;
+            margin-right: 2cm;
+            margin-bottom: 2cm;
+            margin-left: 2.5cm;
         }
 
         body {
-            color: #111827;
-            font-family: "Times New Roman", serif;
-            font-size: 12pt;
-            line-height: 1.35;
+
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            color: #000;
+            line-height: 1.45;
         }
 
-        .kop {
-            display: table;
+        /* =========================================
+           GLOBAL
+        ========================================== */
+
+        .page-break {
+
+            page-break-after: always;
+        }
+
+        table {
+
             width: 100%;
-            border-bottom: 4px double #660300;
-            padding-bottom: 10px;
-            margin-bottom: 24px;
+            border-collapse: collapse;
         }
 
-        .kop-logo,
-        .kop-text {
-            display: table-cell;
+        /* =========================================
+           KOP SURAT UMUM
+        ========================================== */
+
+        .kop-wrapper {
+
+            width: 100%;
+            border-bottom: 4px double #000;
+
+            padding-bottom: 10px;
+
+            margin-bottom: 22px;
+        }
+
+        .kop-table td {
+
+            border: none;
             vertical-align: middle;
         }
 
         .kop-logo {
-            width: 72px;
-            text-align: center;
+
+            width: 90px;
         }
 
-        .logo-box {
-            width: 56px;
-            height: 56px;
-            border: 2px solid #660300;
-            border-radius: 50%;
-            color: #660300;
-            display: inline-block;
-            font-size: 10pt;
-            font-weight: bold;
-            line-height: 56px;
-            text-align: center;
+        .kop-logo img {
+
+            width: 72px;
+            height: 72px;
         }
 
         .kop-text {
+
             text-align: center;
         }
 
         .kop-title {
-            color: #660300;
-            font-size: 15pt;
+
+            margin: 0;
+
+            font-size: 16pt;
+
             font-weight: bold;
-            letter-spacing: 0;
+
+            letter-spacing: 2px;
+
             text-transform: uppercase;
         }
 
         .kop-subtitle {
-            font-size: 13pt;
+
+            margin: 0;
+
+            font-size: 14pt;
+
             font-weight: bold;
+
             text-transform: uppercase;
         }
 
         .kop-address {
+
+            margin-top: 4px;
+
             font-size: 10pt;
         }
 
-        h1 {
-            font-size: 14pt;
-            margin: 0 0 2px;
-            text-align: center;
-            text-decoration: underline;
-            text-transform: uppercase;
-        }
+        /* =========================================
+           SPD KOP
+        ========================================== */
 
-        .doc-number {
-            margin-bottom: 18px;
-            text-align: center;
-        }
+        .spd-kop {
 
-        table {
-            border-collapse: collapse;
             width: 100%;
+
+            margin-bottom: 14px;
         }
 
-        .meta td {
-            padding: 3px 0;
+        .spd-kop-table td {
+
+            border: none;
             vertical-align: top;
         }
 
-        .meta .label {
-            width: 170px;
+        .spd-logo {
+
+            width: 90px;
         }
+
+        .spd-logo img {
+
+            width: 72px;
+            height: 72px;
+        }
+
+        .spd-instansi {
+
+            font-size: 11pt;
+            padding-top: 8px;
+        }
+
+        .spd-nomor {
+
+            width: 280px;
+            font-size: 11pt;
+        }
+
+        .spd-nomor table td {
+
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        /* =========================================
+           JUDUL
+        ========================================== */
+
+        .judul {
+
+            text-align: center;
+
+            margin-bottom: 24px;
+        }
+
+        .judul h1 {
+
+            margin: 0;
+
+            font-size: 15pt;
+
+            text-transform: uppercase;
+
+            text-decoration: underline;
+        }
+
+        .judul p {
+
+            margin-top: 4px;
+        }
+
+        .spd-title {
+
+            text-align: center;
+
+            font-size: 17pt;
+
+            font-weight: bold;
+
+            margin-top: 18px;
+            margin-bottom: 18px;
+
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           SECTION TABLE
+        ========================================== */
+
+        .section-table td {
+
+            border: none;
+
+            vertical-align: top;
+
+            padding-bottom: 8px;
+        }
+
+        .label {
+
+            width: 120px;
+        }
+
+        .colon {
+
+            width: 12px;
+        }
+
+        .isi {
+
+            text-align: justify;
+        }
+
+        /* =========================================
+           CENTER TITLE
+        ========================================== */
+
+        .center-title {
+
+            text-align: center;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+
+        /* =========================================
+           DATA TABLE
+        ========================================== */
 
         .data-table th,
         .data-table td {
-            border: 1px solid #374151;
+
+            border: 1px solid #000;
+
             padding: 6px 8px;
+
             vertical-align: top;
         }
 
         .data-table th {
-            background: #f8f1f1;
-            color: #660300;
-            text-align: left;
-        }
 
-        .section-title {
-            color: #660300;
-            font-weight: bold;
-            margin: 16px 0 6px;
-            text-transform: uppercase;
-        }
-
-        .section-list {
-            margin: 0;
-            padding-left: 24px;
-            line-height: 1.6;
-        }
-
-        .section-list li {
-            margin-bottom: 8px;
-        }
-
-        .section-paragraph {
-            margin: 0 0 18px;
-            text-align: justify;
-            text-indent: 30px;
-        }
-
-        .label-block {
-            margin: 12px 0 4px;
-            font-weight: bold;
-        }
-
-        .member-table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .member-table th,
-        .member-table td {
-            border: 1px solid #374151;
-            padding: 6px 8px;
-            vertical-align: top;
-        }
-
-        .meta td {
-            padding: 3px 0;
-            vertical-align: top;
-        }
-
-        .meta .label {
-            width: 170px;
-        }
-
-        .signature {
-            margin-top: 42px;
-            margin-left: auto;
             text-align: center;
-            width: 260px;
+
+            font-weight: bold;
         }
 
-        .signature-space {
-            height: 64px;
+        /* =========================================
+           SPD TABLE
+        ========================================== */
+
+        .spd-table td {
+
+            border: 1px solid #000;
+
+            padding: 7px;
+
+            vertical-align: top;
         }
+
+        /* =========================================
+           PARAGRAPH
+        ========================================== */
+
+        .paragraph {
+
+            text-align: justify;
+
+            text-indent: 36px;
+
+            margin-top: 24px;
+        }
+
+        /* =========================================
+           TTD
+        ========================================== */
+
+        .ttd {
+
+            width: 280px;
+
+            margin-left: auto;
+
+            margin-top: 35px;
+
+            text-align: center;
+
+            page-break-inside: avoid;
+        }
+
+        .ttd-space {
+
+            height: 75px;
+        }
+
     </style>
+
 </head>
+
 <body>
-    <header class="kop">
-        <div class="kop-logo">
-            <span class="logo-box">KPU</span>
-        </div>
-        <div class="kop-text">
-            <div class="kop-title">Komisi Pemilihan Umum</div>
-            <div class="kop-subtitle">Kabupaten Tolitoli</div>
-            <div class="kop-address">Jl. S. Parman No. 65, Tolitoli, Sulawesi Tengah</div>
-        </div>
-    </header>
 
-    <h1>{{ title }}</h1>
-    <div class="doc-number">Nomor: {{ nomor_dokumen }}</div>
+<!-- =========================================
+     SURAT TUGAS
+========================================== -->
 
-    {% if jenis == 'surat-tugas' %}
-        {% if sppd.menimbang_list.exists %}
-            <div class="section-title">Menimbang</div>
-            <ol class="section-list" type="a">
-                {% for item in sppd.menimbang_list.all %}
-                    <li>{{ item.isi }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
+{% if jenis == 'surat-tugas' %}
 
-        {% if sppd.dasar_list.exists %}
-            <div class="section-title">Dasar</div>
-            <ol class="section-list" type="1">
-                {% for item in sppd.dasar_list.all %}
-                    <li>{{ item.isi }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
+<div class="kop-wrapper">
 
-        <div class="label-block">Memberi Tugas Kepada:</div>
-        <table class="member-table">
-            <thead>
-                <tr>
-                    <th style="width: 32px;">No</th>
-                    <th>Nama</th>
-                    <th>Jabatan</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for peserta in peserta_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ peserta.pegawai }}</td>
-                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <table class="kop-table">
 
-        <div class="label-block">Untuk</div>
-        <p class="section-paragraph">{{ sppd.untuk }}{% if sppd.tujuan %} di {{ sppd.tujuan }}{% endif %}{% if sppd.tanggal_berangkat and sppd.tanggal_kembali %} selama {{ sppd.lama_perjalanan }} hari, tanggal {{ sppd.tanggal_berangkat|date:"d" }} s.d. {{ sppd.tanggal_kembali|date:"d F Y" }}{% endif %}.</p>
-    {% elif jenis == 'surat-perjalanan-dinas' %}
-        <table class="meta">
-            <tr><td class="label">Pejabat yang memberi perintah</td><td>: Ketua KPU Kabupaten Tolitoli</td></tr>
-            <tr><td class="label">Maksud perjalanan dinas</td><td>: {{ sppd.untuk }}</td></tr>
-            <tr><td class="label">Alat angkutan</td><td>: {{ sppd.alat_angkutan }}</td></tr>
-            <tr><td class="label">Tempat tujuan</td><td>: {{ sppd.tujuan }}</td></tr>
-            <tr><td class="label">Tanggal berangkat</td><td>: {{ sppd.tanggal_berangkat|date:"d F Y" }}</td></tr>
-            <tr><td class="label">Tanggal kembali</td><td>: {{ sppd.tanggal_kembali|date:"d F Y" }}</td></tr>
-            <tr><td class="label">Lama perjalanan</td><td>: {{ sppd.lama_perjalanan }} hari</td></tr>
-        </table>
+        <tr>
 
-        <div class="section-title">Pegawai yang melaksanakan perjalanan</div>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th style="width: 32px;">No</th>
-                    <th>Nama</th>
-                    <th>Pangkat/Golongan</th>
-                    <th>Jabatan</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for peserta in peserta_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ peserta.pegawai }}</td>
-                        <td>{{ peserta.pegawai.pangkat|default:"-" }} / {{ peserta.pegawai.golongan|default:"-" }}</td>
-                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% elif jenis == 'lampiran' %}
-        <div class="section-title">Lampiran Surat Tugas</div>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th style="width: 32px;">No</th>
-                    <th>Nama</th>
-                    <th>Jabatan</th>
-                    <th>Keterangan</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for peserta in peserta_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ peserta.pegawai }}</td>
-                        <td>{{ peserta.pegawai.jabatan|default:"-" }}</td>
-                        <td>{{ sppd.tujuan }}, {{ sppd.tanggal_berangkat|date:"d M Y" }} - {{ sppd.tanggal_kembali|date:"d M Y" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="section-title">Rincian Biaya</div>
-        {% for peserta in peserta_list %}
-            <p><strong>{{ peserta.pegawai }}</strong></p>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Jenis</th>
-                        <th>Uraian</th>
-                        <th style="width: 130px;">Jumlah</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in peserta.rincian_items %}
-                        <tr>
-                            <td>{{ item.get_jenis_biaya_display }}</td>
-                            <td>{{ item.uraian }}</td>
-                            <td>Rp {{ item.jumlah|floatformat:0 }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3">Belum ada rincian biaya.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
+            <td class="kop-logo">
+
+                <img
+                    src="{% static 'images/kpu-logo.png' %}"
+                    alt="Logo KPU"
+                >
+
+            </td>
+
+            <td class="kop-text">
+
+                <p class="kop-title">
+                    KOMISI PEMILIHAN UMUM
+                </p>
+
+                <p class="kop-subtitle">
+                    KABUPATEN TOLITOLI
+                </p>
+
+                <div class="kop-address">
+                    Jl. S. Parman No. 65, Tolitoli, Sulawesi Tengah
+                </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+<div class="judul">
+
+    <h1>
+        SURAT TUGAS
+    </h1>
+
+    <p>
+        Nomor : {{ nomor_dokumen }}
+    </p>
+
+</div>
+
+<table class="section-table">
+
+    {% if sppd.menimbang_list.exists %}
+
+    <tr>
+
+        <td class="label">
+            Menimbang
+        </td>
+
+        <td class="colon">
+            :
+        </td>
+
+        <td class="isi">
+
+            {% for item in sppd.menimbang_list.all %}
+
+            <div>
+
+                {{ forloop.counter }}.
+                {{ item.isi }}
+
+            </div>
+
+            {% endfor %}
+
+        </td>
+
+    </tr>
+
     {% endif %}
 
-    {% if jenis == 'surat-tugas' %}
-        <p>Demikian surat tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.</p>
-    {% else %}
-        <p>Demikian dokumen ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
+    {% if sppd.dasar_list.exists %}
+
+    <tr>
+
+        <td class="label">
+            Dasar
+        </td>
+
+        <td class="colon">
+            :
+        </td>
+
+        <td class="isi">
+
+            {% for item in sppd.dasar_list.all %}
+
+            <div>
+
+                {{ forloop.counter }}.
+                {{ item.isi }}
+
+            </div>
+
+            {% endfor %}
+
+        </td>
+
+    </tr>
+
     {% endif %}
 
-    <div class="signature">
-        <div>Tolitoli, {{ today|date:"d F Y" }}</div>
-        <div>Ketua KPU Kabupaten Tolitoli</div>
-        <div class="signature-space"></div>
-        <div><strong>________________________</strong></div>
+</table>
+
+<div class="center-title">
+    MEMBERI TUGAS
+</div>
+
+<table class="section-table">
+
+    <tr>
+
+        <td class="label">
+            Kepada
+        </td>
+
+        <td class="colon">
+            :
+        </td>
+
+        <td>
+
+            {% for peserta in peserta_list %}
+
+            <div style="margin-bottom:10px;">
+
+                {{ forloop.counter }}.
+                {{ peserta.pegawai }}
+
+                <div style="margin-left:24px;">
+
+                    {{ peserta.pegawai.jabatan|default:"-" }}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </td>
+
+    </tr>
+
+    <tr>
+
+        <td class="label">
+            Untuk
+        </td>
+
+        <td class="colon">
+            :
+        </td>
+
+        <td class="isi">
+
+            {{ sppd.untuk }}
+
+            di {{ sppd.tujuan }}
+
+            selama {{ sppd.lama_perjalanan }} hari,
+
+            tanggal
+            {{ sppd.tanggal_berangkat|date:"d F Y" }}
+
+            s.d.
+
+            {{ sppd.tanggal_kembali|date:"d F Y" }}
+
+        </td>
+
+    </tr>
+
+</table>
+
+<p class="paragraph">
+
+    Demikian surat tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.
+
+</p>
+
+<div class="ttd">
+
+    <div>
+        Tolitoli, {{ today|date:"d F Y" }}
     </div>
+
+    <div>
+
+        {{ sppd.penandatangan.jabatan|default:"Ketua" }}
+
+    </div>
+
+    <div class="ttd-space"></div>
+
+    <div>
+
+        <strong>
+
+            {{ sppd.penandatangan }}
+
+        </strong>
+
+    </div>
+
+</div>
+
+<!-- =========================================
+     SPD
+========================================== -->
+
+{% elif jenis == 'surat-perjalanan-dinas' %}
+
+{% for peserta in peserta_list %}
+
+<div class="page-break">
+
+    <!-- KOP SPD -->
+
+    <div class="spd-kop">
+
+        <table class="spd-kop-table">
+
+            <tr>
+
+                <td class="spd-logo">
+
+                    <img
+                        src="{% static 'images/kpu-logo.png' %}"
+                        alt="Logo KPU"
+                    >
+
+                </td>
+
+                <td class="spd-instansi">
+
+                    <div>
+                        Komisi Pemilihan Umum
+                    </div>
+
+                    <div>
+                        Kabupaten Tolitoli
+                    </div>
+
+                </td>
+
+                <td class="spd-nomor">
+
+                    <table>
+
+                        <tr>
+
+                            <td>
+                                Lembar Ke
+                            </td>
+
+                            <td width="10">
+                                :
+                            </td>
+
+                            <td>
+                                -
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Kode No.
+                            </td>
+
+                            <td>
+                                :
+                            </td>
+
+                            <td>
+                                -
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Nomor
+                            </td>
+
+                            <td>
+                                :
+                            </td>
+
+                            <td>
+
+                                <strong>
+
+                                    {{ sppd.nomor_surat_tugas }}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- TITLE SPD -->
+
+    <div class="spd-title">
+
+        SURAT PERJALANAN DINAS (SPD)
+
+    </div>
+
+    <!-- TABLE SPD -->
+
+    <table class="spd-table">
+
+        <tr>
+
+            <td width="40">
+                1.
+            </td>
+
+            <td width="280">
+                Pejabat Pembuat Komitmen
+            </td>
+
+            <td>
+
+                {{ sppd.penandatangan.user.get_full_name }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+    <td>
+        2.
+    </td>
+
+    <td>
+        Nama Pegawai Pelaksana Perjalanan Dinas
+    </td>
+
+    <td>
+
+        <strong>
+            {{ peserta.pegawai.user.get_full_name }}
+        </strong>
+
+        <br>
+
+        NIP.
+        {{ peserta.pegawai.user.username }}
+
+    </td>
+
+</tr>
+
+        <tr>
+
+            <td>
+                3.
+            </td>
+
+            <td>
+
+                a. Pangkat / Golongan
+                <br>
+
+                b. Jabatan
+                <br>
+
+                c. Tingkat Biaya Perjalanan Dinas
+
+            </td>
+
+            <td>
+
+                a.
+                {{ peserta.pegawai.pangkat|default:"-" }}
+                /
+                {{ peserta.pegawai.golongan|default:"-" }}
+
+                <br>
+
+                b.
+                {{ peserta.pegawai.jabatan|default:"-" }}
+
+                <br>
+
+                c. -
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                4.
+            </td>
+
+            <td>
+                Maksud Perjalanan Dinas
+            </td>
+
+            <td>
+
+                {{ sppd.untuk }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                5.
+            </td>
+
+            <td>
+                Alat Angkutan
+            </td>
+
+            <td>
+
+                {{ sppd.alat_angkutan }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                6.
+            </td>
+
+            <td>
+
+                a. Tempat Berangkat
+                <br>
+
+                b. Tempat Tujuan
+
+            </td>
+
+            <td>
+
+                a. Tolitoli
+                <br>
+
+                b. {{ sppd.tujuan }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                7.
+            </td>
+
+            <td>
+
+                a. Lama Perjalanan
+                <br>
+
+                b. Tanggal Berangkat
+                <br>
+
+                c. Tanggal Kembali
+
+            </td>
+
+            <td>
+
+                a.
+                {{ sppd.lama_perjalanan }}
+                Hari
+
+                <br>
+
+                b.
+                {{ sppd.tanggal_berangkat|date:"d F Y" }}
+
+                <br>
+
+                c.
+                {{ sppd.tanggal_kembali|date:"d F Y" }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                8.
+            </td>
+
+            <td>
+                Pengikut
+            </td>
+
+            <td>
+                -
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                9.
+            </td>
+
+            <td>
+
+                Pembebanan Anggaran
+
+                <br><br>
+
+                a. Instansi
+                <br>
+
+                b. Akun
+
+            </td>
+
+            <td>
+
+                <br><br>
+
+                a. KPU Kabupaten Tolitoli
+                <br>
+
+                b. -
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                10.
+            </td>
+
+            <td>
+                Keterangan Lain-lain
+            </td>
+
+            <td>
+                -
+            </td>
+
+        </tr>
+
+    </table>
+
+    <!-- TTD -->
+
+    <div class="ttd">
+
+        <div>
+            Dikeluarkan di : Tolitoli
+        </div>
+
+        <div>
+            Tanggal :
+            {{ today|date:"d F Y" }}
+        </div>
+
+        <br>
+
+        <div>
+
+            {{ sppd.penandatangan.jabatan|default:"Pejabat Pembuat Komitmen" }}
+
+        </div>
+
+        <div class="ttd-space"></div>
+
+        <div>
+
+    <strong>
+
+        {{ sppd.penandatangan.user.get_full_name }}
+
+    </strong>
+
+</div>
+
+<div style="margin-top:4px;">
+
+    NIP.
+    {{ sppd.penandatangan.user.username }}
+
+</div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+<!-- =========================================
+     LAMPIRAN
+========================================== -->
+
+{% elif jenis == 'lampiran' %}
+
+<div class="kop-wrapper">
+
+    <table class="kop-table">
+
+        <tr>
+
+            <td class="kop-logo">
+
+                <img
+                    src="{% static 'images/kpu-logo.png' %}"
+                    alt="Logo KPU"
+                >
+
+            </td>
+
+            <td class="kop-text">
+
+                <p class="kop-title">
+                    KOMISI PEMILIHAN UMUM
+                </p>
+
+                <p class="kop-subtitle">
+                    KABUPATEN TOLITOLI
+                </p>
+
+                <div class="kop-address">
+                    Jl. S. Parman No. 65, Tolitoli, Sulawesi Tengah
+                </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+<div class="judul">
+
+    <h1>
+        LAMPIRAN SURAT TUGAS
+    </h1>
+
+    <p>
+        Nomor : {{ sppd.nomor_surat_tugas }}
+    </p>
+
+</div>
+
+<table class="data-table">
+
+    <thead>
+
+        <tr>
+
+            <th width="40">
+                No
+            </th>
+
+            <th>
+                Nama
+            </th>
+
+            <th>
+                Jabatan
+            </th>
+
+            <th>
+                Keterangan
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for peserta in peserta_list %}
+
+        <tr>
+
+            <td align="center">
+                {{ forloop.counter }}
+            </td>
+
+            <td>
+                {{ peserta.pegawai }}
+            </td>
+
+            <td>
+                {{ peserta.pegawai.jabatan|default:"-" }}
+            </td>
+
+            <td>
+
+                {{ sppd.tujuan }}
+
+                <br>
+
+                {{ sppd.tanggal_berangkat|date:"d M Y" }}
+                -
+                {{ sppd.tanggal_kembali|date:"d M Y" }}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<div class="ttd">
+
+    <div>
+        Tolitoli, {{ today|date:"d F Y" }}
+    </div>
+
+    <div>
+
+        {{ sppd.penandatangan.jabatan|default:"Ketua" }}
+
+    </div>
+
+    <div class="ttd-space"></div>
+
+    <div>
+
+        <strong>
+
+            {{ sppd.penandatangan }}
+
+        </strong>
+
+    </div>
+
+</div>
+
+{% endif %}
+
 </body>
+
 </html>

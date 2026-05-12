@@ -8,8 +8,31 @@ from weasyprint import HTML
 
 from accounts.permissions import get_role_redirect_url, get_user_role, is_admin_user, user_can_access_sppd
 from dokumen.services import get_kelengkapan_progress
-from .forms import SPPDForm, DasarFormSet, MenimbangFormSet
-from .models import SPPD, SPPDPegawai
+from .forms import SPPDForm, DasarFormSet, MenimbangFormSet, MenimbangInlineFormSet, DasarInlineFormSet
+from .models import SPPD, SPPDPegawai, DefaultMenimbang, SPPDMenimbang, SPPDDasar
+
+
+def get_menimbang_formset_with_defaults(data=None, prefix='menimbang'):
+    """
+    Membuat MenimbangFormSet dengan pre-populated default values.
+    """
+    # Get active default menimbang dari database
+    default_menimbang_list = DefaultMenimbang.objects.filter(aktif=True).order_by('urutan')
+    
+    # Prepare initial data
+    initial_data = []
+    for default_item in default_menimbang_list:
+        initial_data.append({
+            'isi': default_item.isi
+        })
+    
+    if data is not None:
+        # POST request
+        return MenimbangFormSet(data, prefix=prefix)
+    
+    # GET request dengan initial data
+    formset = MenimbangFormSet(prefix=prefix, initial=initial_data)
+    return formset
 
 
 @login_required
@@ -33,30 +56,38 @@ def sppd_list(request):
 def sppd_create(request):
     if request.method == 'POST':
         form = SPPDForm(request.POST)
-        menimbang_formset = MenimbangFormSet(request.POST, prefix='menimbang')
+        menimbang_formset = get_menimbang_formset_with_defaults(data=request.POST)
         dasar_formset = DasarFormSet(request.POST, prefix='dasar')
+        
         if form.is_valid() and menimbang_formset.is_valid() and dasar_formset.is_valid():
             sppd = form.save(commit=False)
             sppd.created_by = request.user.pegawai
             sppd.save()
+            
+            # Add pegawai
             for pegawai in form.cleaned_data['pegawai']:
                 SPPDPegawai.objects.get_or_create(sppd=sppd, pegawai=pegawai)
 
+            # Save menimbang forms
+            untuk = form.cleaned_data.get('untuk', '')
             for index, menimbang_form in enumerate(menimbang_formset.forms, start=1):
-                isi = menimbang_form.cleaned_data.get('isi')
+                isi = menimbang_form.cleaned_data.get('isi', '').strip()
                 if isi:
-                    sppd.menimbang_list.create(urutan=index, isi=isi)
+                    # Replace placeholder {untuk} dengan nilai maksud perjalanan
+                    isi_final = isi.replace('{untuk}', untuk)
+                    SPPDMenimbang.objects.create(sppd=sppd, urutan=index, isi=isi_final)
 
+            # Save dasar forms
             for index, dasar_form in enumerate(dasar_formset.forms, start=1):
-                isi = dasar_form.cleaned_data.get('isi')
+                isi = dasar_form.cleaned_data.get('isi', '').strip()
                 if isi:
-                    sppd.dasar_list.create(urutan=index, isi=isi)
+                    SPPDDasar.objects.create(sppd=sppd, urutan=index, isi=isi)
 
             messages.success(request, 'Data SPPD berhasil ditambahkan.')
             return redirect('sppd:sppd')
     else:
         form = SPPDForm()
-        menimbang_formset = MenimbangFormSet(prefix='menimbang')
+        menimbang_formset = get_menimbang_formset_with_defaults()
         dasar_formset = DasarFormSet(prefix='dasar')
 
     context = {

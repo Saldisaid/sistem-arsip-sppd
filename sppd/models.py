@@ -43,6 +43,14 @@ class SPPD(models.Model):
         null=True
     )
 
+    penandatangan = models.ForeignKey(
+        Pegawai,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sppd_penandatangan_set'
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -126,3 +134,36 @@ class SPPDPegawai(models.Model):
 
     def __str__(self):
         return f"{self.pegawai} - {self.sppd}"
+
+
+class DefaultMenimbang(models.Model):
+    """Template default untuk menimbang surat tugas"""
+    
+    urutan = models.IntegerField(
+        unique=True,
+        help_text="Urutan penampilan menimbang"
+    )
+    
+    isi = models.TextField(
+        help_text="Isi menimbang. Gunakan {untuk} untuk placeholder field 'untuk' dari SPPD"
+    )
+    
+    aktif = models.BooleanField(
+        default=True,
+        help_text="Jika aktif, akan ditampilkan di surat tugas baru"
+    )
+    
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    
+    class Meta:
+        ordering = ['urutan']
+        verbose_name_plural = "Default Menimbang"
+    
+    def __str__(self):
+        return f"Menimbang {self.urutan}: {self.isi[:50]}..."

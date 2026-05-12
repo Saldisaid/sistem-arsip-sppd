@@ -1,37 +1,157 @@
 {% extends "base_admin.html" %}
 
 {% block content %}
+
 <form class="grid gap-4" method="post" enctype="multipart/form-data" novalidate>
- {% csrf_token %}
- <section class="rounded-lg border border-slate-300 bg-white">
- <div class="border-b border-slate-300 px-5 py-4">
- <h2 class="m-0 text-lg font-bold">Upload Dokumen</h2>
- {% if rincian_item %}
- <p class="m-0 mt-1 text-sm text-slate-500">{{ rincian_item.get_jenis_biaya_display }} Â{{ rincian_item.uraian }}</p>
- <p class="m-0 mt-2 rounded-lg bg-[#660300]/5 px-3 py-2 text-sm font-semibold text-[#660300]">
- Jenis dokumen otomatis: {{ fixed_jenis_label }}
- </p>
- {% else %}
- <p class="m-0 mt-1 text-sm text-slate-500">{{ sppd_pegawai.sppd.nomor_surat_tugas }} ÂDokumen tambahan</p>
- {% endif %}
- </div>
 
- <div class="grid gap-4 p-5">
- {% for field in form %}
- <div>
- <label class="mb-1.5 block text-sm font-bold text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
- {{ field }}
- {% if field.errors %}
- <p class="mt-1.5 text-sm text-red-700">{{ field.errors|striptags }}</p>
- {% endif %}
- </div>
- {% endfor %}
- </div>
- </section>
+    {% csrf_token %}
 
- <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
- <a class="inline-grid min-h-11 place-items-center rounded-lg border border-slate-300 bg-white px-5 font-bold text-slate-700 hover:border-slate-400" href="{% url 'dokumen:user_sppd_detail' sppd_pegawai.id %}">Batal</a>
- <button class="min-h-11 rounded-lg border-0 bg-[#660300] px-5 font-bold text-white hover:bg-[#4f0200]" type="submit">Upload</button>
- </div>
+    <section class="rounded-lg border border-slate-300 bg-white">
+
+        <div class="border-b border-slate-300 px-5 py-4">
+
+            <h2 class="m-0 text-lg font-bold">
+                Upload Dokumen
+            </h2>
+
+            {% if rincian_item %}
+
+                <p class="m-0 mt-1 text-sm text-slate-500">
+                    {{ rincian_item.get_jenis_biaya_display }}
+                    {{ rincian_item.uraian }}
+                </p>
+
+                <p class="m-0 mt-2 rounded-lg bg-[#660300]/5 px-3 py-2 text-sm font-semibold text-[#660300]">
+                    Jenis dokumen otomatis:
+                    {{ fixed_jenis_label }}
+                </p>
+
+            {% else %}
+
+                <p class="m-0 mt-1 text-sm text-slate-500">
+                    {{ sppd_pegawai.sppd.nomor_surat_tugas }}
+                    Dokumen tambahan
+                </p>
+
+            {% endif %}
+
+        </div>
+
+        <!-- FORM -->
+
+        <div class="grid gap-4 p-5">
+
+            {% for field in form %}
+
+            <div>
+
+                <label
+                    class="mb-1.5 block text-sm font-bold text-slate-600"
+                    for="{{ field.id_for_label }}"
+                >
+                    {{ field.label }}
+                </label>
+
+                <!-- FILE INPUT -->
+
+                {% if field.name == 'file' %}
+
+                    <div class="grid gap-3">
+
+                        <input
+                            type="file"
+                            name="{{ field.name }}"
+                            id="{{ field.id_for_label }}"
+                            accept="image/*,.pdf"
+                            capture="environment"
+                            onchange="previewImage(event)"
+                            class="block min-h-11 w-full rounded-lg border border-slate-300 px-3 py-2"
+                        >
+
+                        <!-- PREVIEW IMAGE -->
+
+                        <img
+                            id="preview"
+                            style="
+                                display:none;
+                                max-height:300px;
+                                border-radius:12px;
+                                border:1px solid #cbd5e1;
+                            "
+                        >
+
+                    </div>
+
+                {% else %}
+
+                    {{ field }}
+
+                {% endif %}
+
+                <!-- ERROR -->
+
+                {% if field.errors %}
+
+                    <p class="mt-1.5 text-sm text-red-700">
+                        {{ field.errors|striptags }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- BUTTON -->
+
+    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+
+        <a
+            class="inline-grid min-h-11 place-items-center rounded-lg border border-slate-300 bg-white px-5 font-bold text-slate-700 hover:border-slate-400"
+            href="{% url 'dokumen:user_sppd_detail' sppd_pegawai.id %}"
+        >
+            Batal
+        </a>
+
+        <button
+            class="min-h-11 rounded-lg border-0 bg-[#660300] px-5 font-bold text-white hover:bg-[#4f0200]"
+            type="submit"
+        >
+            Upload
+        </button>
+
+    </div>
+
 </form>
+
+<!-- PREVIEW SCRIPT -->
+
+<script>
+
+function previewImage(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const preview = document.getElementById('preview');
+
+    // RESET
+    preview.style.display = 'none';
+
+    // IMAGE PREVIEW
+    if (file.type.startsWith('image/')) {
+
+        preview.src = URL.createObjectURL(file);
+
+        preview.style.display = 'block';
+    }
+}
+
+</script>
+
 {% endblock %}
