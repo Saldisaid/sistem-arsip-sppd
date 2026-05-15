@@ -16,7 +16,8 @@
         ========================================== */
 
         @page {
-            size: A4;
+            size: 210mm 330mm;
+
             margin-top: 2cm;
             margin-right: 2cm;
             margin-bottom: 2cm;
@@ -264,6 +265,43 @@
             text-align: center;
 
             font-weight: bold;
+        }
+
+        .lampiran-meta td {
+
+            border: none;
+            vertical-align: top;
+            padding: 0;
+        }
+
+        .lampiran-row {
+
+            margin-bottom: 8px;
+        }
+
+        .lampiran-row span {
+
+            display: inline-block;
+            min-width: 170px;
+            vertical-align: top;
+        }
+
+        .lampiran-heading {
+
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        .lampiran-signature {
+
+            margin-top: 12px;
+        }
+
+        .lampiran-note {
+
+            margin-top: 20px;
+            text-align: justify;
         }
 
         /* =========================================
@@ -961,142 +999,333 @@
 
 {% elif jenis == 'lampiran' %}
 
-<div class="kop-wrapper">
+<style>
 
-    <table class="kop-table">
+@page {
+    size: Legal portrait;
+    margin: 0.5cm 1.5cm 1cm 1.5cm;
+}
 
+.lampiran-wrapper {
+    font-family: "Arial Narrow", Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.15;
+}
+
+.lampiran-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #000;
+}
+
+.center-title {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 10px 0;
+}
+
+.lampiran-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.lampiran-table td {
+    border: 1px solid #000;
+    vertical-align: top;
+    padding: 5px 6px;
+}
+
+.lampiran-no {
+    width: 28px;
+    font-weight: bold;
+}
+
+.lampiran-content {
+    width: 40%;
+    height: 150px;
+    vertical-align: top;
+}
+
+.ttd-lampiran {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.small-font {
+    font-size: 8.5pt;
+}
+
+tr {
+    page-break-inside: avoid;
+}
+
+</style>
+
+<div class="lampiran-wrapper">
+
+<div class="lampiran-header">
+        <span style="float: left;">Lampiran SPPD Tanggal : {{ sppd.tanggal_berangkat|date:"d F Y" }}</span>
+        <span style="float: right;">Nomor : {{ sppd.nomor_surat_tugas }}</span>
+        <div style="clear: both;"></div>
+    </div>
+
+
+    <table class="lampiran-table">
+
+        <!-- I: 2 kolom - I di kanan -->
         <tr>
+            <td class="lampiran-no"></td>
+            <td class="lampiran-content"></td>
+            <td class="lampiran-content">
+                I. Berangkat dari :
+                Tolitoli
+                <br>
+                (Tempat Kedudukan)
+                <br><br>
+                Ke :
+                {{ sppd.tujuan }}
+                <br><br>
+                Pada Tanggal :
+                {{ sppd.tanggal_berangkat|date:"d F Y" }}
+                <br><br>
+                Kepala :
+                {{ sppd.penandatangan.jabatan|default:"Plt. Sekretaris KPU Kabupaten Tolitoli" }}
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                <br>
+                <br>
+    <div style="
+        display:inline-block;
+        border-bottom:1px solid #000;
+        font-weight:bold;
+        padding-bottom:2px;
+    ">
 
-            <td class="kop-logo">
+        {{ sppd.penandatangan.user.get_full_name|default:"-" }}
 
-                <img
-                    src="{% static 'images/kpu-logo.png' %}"
-                    alt="Logo KPU"
-                >
+    </div>
 
+    <br>
+
+    <div style="margin-top:3px;">
+
+        NIP. {{ sppd.penandatangan.user.username|default:"-" }}
+
+    </div>
+
+</div>
             </td>
+        </tr>
 
-            <td class="kop-text">
-
-                <p class="kop-title">
-                    KOMISI PEMILIHAN UMUM
-                </p>
-
-                <p class="kop-subtitle">
-                    KABUPATEN TOLITOLI
-                </p>
-
-                <div class="kop-address">
-                    Jl. S. Parman No. 65, Tolitoli, Sulawesi Tengah
+        <!-- II: 3 kolom -->
+        <tr>
+            <td class="lampiran-no">II.</td>
+            <td class="lampiran-content">
+                Tiba di :
+                <br><br>
+                Jam :
+                ……………………. : …………………….
+                <br><br>
+                Pada Tanggal :
+                {{ sppd.tanggal_berangkat|date:"d F Y" }}
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
                 </div>
-
             </td>
+            <td class="lampiran-content">
+                Berangkat dari :
+                {{ sppd.tujuan }}
+                <br><br>
+                Ke :
+                Tolitoli
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+        </tr>
 
+        <!-- III: 3 kolom -->
+        <tr>
+            <td class="lampiran-no">III.</td>
+            <td class="lampiran-content">
+                Tiba di :
+                <br><br>
+                Jam :
+                ……………………. : …………………….
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+            <td class="lampiran-content">
+                Berangkat dari :
+                Tolitoli
+                <br><br>
+                Ke :
+                {{ sppd.tujuan }}
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+        </tr>
+
+        <!-- IV: 3 kolom -->
+        <tr>
+            <td class="lampiran-no">IV.</td>
+            <td class="lampiran-content">
+                Tiba di :
+                <br><br>
+                Jam :
+                ……………………. : …………………….
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+            <td class="lampiran-content">
+                Berangkat dari :
+                {{ sppd.tujuan }}
+                <br><br>
+                Ke :
+                Tolitoli
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+        </tr>
+
+        <!-- V: 3 kolom -->
+        <tr>
+            <td class="lampiran-no">V.</td>
+            <td class="lampiran-content">
+                Tiba di :
+                <br><br>
+                Jam :
+                ……………………. : …………………….
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+            <td class="lampiran-content">
+                Berangkat dari :
+                Tolitoli
+                <br><br>
+                Ke :
+                {{ sppd.tujuan }}
+                <br><br>
+                Pada Tanggal :
+                ……………………………….
+                <br><br>
+                Kepala :
+                <div class="ttd-lampiran" style="text-align:left; margin-left:0">
+                    ______________________
+                    <br>
+                    NIP. __________________
+                </div>
+            </td>
+        </tr>
+
+        <!-- VI: 3 kolom -->
+        <tr>
+            <td class="lampiran-no">VI.</td>
+            <td class="lampiran-content">
+                Tiba kembali di :
+                Tolitoli
+                <br><br>
+                (Tempat Kedudukan)
+                <br><br>
+                Pada Tanggal :
+                {{ sppd.tanggal_kembali|date:"d F Y" }}
+                <br><br>
+                Pejabat Pembuat Komitmen,
+                <br><br>
+                <br><br>
+                <div class="ttd-lampiran" style="text-align:left">
+                    <strong>{{ sppd.penandatangan.user.get_full_name|default:"-" }}</strong>
+                    <br>
+                    NIP. {{ sppd.penandatangan.user.username|default:"-" }}
+                </div>
+            </td>
+            <td class="lampiran-content">
+                Telah diperiksa dengan keterangan bahwa perjalanan tersebut atas perintahnya dan semata-mata untuk kepentingan jabatan dalam waktu yang sesingkat-singkatnya.
+                <br><br>
+                Pejabat Pembuat Komitmen,
+                <br><br>
+                <br><br>
+                <div class="ttd-lampiran" style="text-align:left">
+                    <strong>{{ sppd.penandatangan.user.get_full_name|default:"-" }}</strong>
+                    <br>
+                    NIP. {{ sppd.penandatangan.user.username|default:"-" }}
+                </div>
+            </td>
+        </tr>
+
+        <!-- VII: 2 kolom -->
+        <tr>
+            <td class="lampiran-no">VII.</td>
+            <td colspan="2">Catatan Lain-lain :</td>
+        </tr>
+
+        <!-- VIII: 1 kolom -->
+        <tr>
+            <td class="lampiran-no" colspan="3" class="small-font">
+                VIII. PERHATIAN :
+                <br>
+                PPK yang menerbitkan SPD, pegawai yang melakukan perjalanan dinas,
+                para pejabat yang mengesahkan tanggal berangkat/tiba,
+                serta bendahara pengeluaran yang bertanggungjawab berdasarkan
+                Peraturan-Peraturan Keuangan Negara apabila negara menderita rugi
+                akibat kesalahan, kelalaian dan kealpaannya.
+            </td>
         </tr>
 
     </table>
-
-</div>
-
-<div class="judul">
-
-    <h1>
-        LAMPIRAN SURAT TUGAS
-    </h1>
-
-    <p>
-        Nomor : {{ sppd.nomor_surat_tugas }}
-    </p>
-
-</div>
-
-<table class="data-table">
-
-    <thead>
-
-        <tr>
-
-            <th width="40">
-                No
-            </th>
-
-            <th>
-                Nama
-            </th>
-
-            <th>
-                Jabatan
-            </th>
-
-            <th>
-                Keterangan
-            </th>
-
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        {% for peserta in peserta_list %}
-
-        <tr>
-
-            <td align="center">
-                {{ forloop.counter }}
-            </td>
-
-            <td>
-                {{ peserta.pegawai }}
-            </td>
-
-            <td>
-                {{ peserta.pegawai.jabatan|default:"-" }}
-            </td>
-
-            <td>
-
-                {{ sppd.tujuan }}
-
-                <br>
-
-                {{ sppd.tanggal_berangkat|date:"d M Y" }}
-                -
-                {{ sppd.tanggal_kembali|date:"d M Y" }}
-
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-<div class="ttd">
-
-    <div>
-        Tolitoli, {{ today|date:"d F Y" }}
-    </div>
-
-    <div>
-
-        {{ sppd.penandatangan.jabatan|default:"Ketua" }}
-
-    </div>
-
-    <div class="ttd-space"></div>
-
-    <div>
-
-        <strong>
-
-            {{ sppd.penandatangan }}
-
-        </strong>
-
-    </div>
 
 </div>
 

@@ -2,6 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils import timezone
+from weasyprint import HTML
 
 from accounts.permissions import get_role_redirect_url, is_admin_user, user_can_access_sppd
 from sppd.forms import RincianBiayaItemForm
@@ -60,29 +63,24 @@ def download_rincian_pegawai(request, sppd_pegawai_id):
         return redirect(get_role_redirect_url(request.user) or 'accounts:login')
 
     rincian = getattr(sppd_pegawai, 'rincian_biaya', None)
-    content = [
-        'Rincian Biaya',
-        'E-SPPD KPU Tolitoli',
-        '',
-        f'Pegawai: {sppd_pegawai.pegawai}',
-        f'Nomor ST: {sppd_pegawai.sppd.nomor_surat_tugas}',
-        f'Nomor SPPD: {sppd_pegawai.sppd.nomor_sppd or "-"}',
-        f'Tujuan: {sppd_pegawai.sppd.tujuan}',
-        f'Tanggal: {sppd_pegawai.sppd.tanggal_berangkat} - {sppd_pegawai.sppd.tanggal_kembali}',
-        '',
-        'RINCIAN',
-    ]
-    total = 0
+    item_list = rincian.item_list.order_by('jenis_biaya', 'created_at') if rincian else []
+    total = sum(item.jumlah for item in item_list)
+    
+    penandatangan = sppd_pegawai.sppd.penandatangan if sppd_pegawai.sppd.penandatangan else None
 
-    if not rincian:
-        content.append('- Belum ada rincian biaya')
-    else:
-        for item in rincian.item_list.order_by('jenis_biaya', 'created_at'):
-            total += item.jumlah
-            content.append(f'- {item.get_jenis_biaya_display()} | {item.uraian} | Rp {item.jumlah}')
+    html = render_to_string(
+        'rincian/rincian_pdf.html',
+        {
+            'sppd_pegawai': sppd_pegawai,
+            'rincian': rincian,
+            'item_list': item_list,
+            'total': total,
+            'penandatangan': penandatangan,
+            'today': timezone.localdate(),
+        },
+    )
+    pdf_file = HTML(string=html, base_url=request.build_absolute_uri('/')).write_pdf()
 
-    content.extend(['', f'Total: Rp {total}'])
-
-    response = HttpResponse('\n'.join(str(line) for line in content), content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="rincian-biaya-pegawai-{sppd_pegawai.id}.txt"'
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="rincian-biaya-pegawai-{sppd_pegawai.id}.pdf"'
     return response

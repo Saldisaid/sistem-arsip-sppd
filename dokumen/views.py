@@ -11,8 +11,8 @@ from PIL import Image, UnidentifiedImageError
 from accounts.permissions import get_role_redirect_url, get_user_role, is_admin_user
 from rincian.models import RincianBiayaItem
 from sppd.models import SPPDPegawai
-from .forms import DokumenUploadForm, KwitansiSaktiForm
-from .models import Dokumen, KwitansiSakti
+from .forms import DokumenUploadForm, KwitansiSaktiForm, SPBYForm
+from .models import Dokumen, KwitansiSakti, SPBY
 from .services import get_kelengkapan_progress, update_status_kelengkapan
 
 
@@ -22,8 +22,8 @@ MODULES = {
         'description': 'Pantau kelengkapan tiket, boarding pass, hotel, laporan, dan dokumen pendukung lainnya.',
     },
     'kwitansi': {
-        'title': 'Kwitansi SAKTI',
-        'description': 'Kelola unggahan kwitansi SAKTI dan arsip bukti transaksi perjalanan dinas.',
+        'title': 'Kwitansi & SPBY',
+        'description': 'Kelola unggahan kwitansi SAKTI dan SPBY beserta arsip bukti perjalanan dinas.',
     },
 }
 
@@ -85,9 +85,11 @@ def convert_image_upload_to_pdf(uploaded_file):
 
 
 @login_required
-@user_passes_test(is_admin_user)
 def module_page(request, module):
     if module == 'dokumen':
+        if get_user_role(request.user) != 'admin':
+            return redirect(get_role_redirect_url(request.user) or 'accounts:login')
+
         verifikasi_list = (
             SPPDPegawai.objects
             .select_related('sppd', 'pegawai__user')
@@ -105,19 +107,38 @@ def module_page(request, module):
         return render(request, 'dokumen/verifikasi_list.html', context)
 
     if module == 'kwitansi':
+        if get_user_role(request.user) != 'operator':
+            return redirect(get_role_redirect_url(request.user) or 'accounts:login')
+
+        form = KwitansiSaktiForm(prefix='kwitansi')
+        spby_form = SPBYForm(prefix='spby')
+
         if request.method == 'POST':
-            form = KwitansiSaktiForm(request.POST, request.FILES)
+            form_type = request.POST.get('form_type')
+            if form_type == 'spby':
+                spby_form = SPBYForm(request.POST, request.FILES, prefix='spby')
+                if spby_form.is_valid():
+                    spby = spby_form.save(commit=False)
+                    spby.uploaded_by = request.user.pegawai
+                    spby.save()
+                    messages.success(request, 'SPBY berhasil disimpan.')
+                    return redirect('dokumen:kwitansi')
+            else:
+                form = KwitansiSaktiForm(request.POST, request.FILES, prefix='kwitansi')
             if form.is_valid():
                 kwitansi = form.save(commit=False)
                 kwitansi.uploaded_by = request.user.pegawai
                 kwitansi.save()
                 messages.success(request, 'Kwitansi SAKTI berhasil disimpan.')
                 return redirect('dokumen:kwitansi')
-        else:
-            form = KwitansiSaktiForm()
 
         kwitansi_list = (
             KwitansiSakti.objects
+            .select_related('sppd', 'uploaded_by__user')
+            .order_by('-uploaded_at')
+        )
+        spby_list = (
+            SPBY.objects
             .select_related('sppd', 'uploaded_by__user')
             .order_by('-uploaded_at')
         )
@@ -125,7 +146,9 @@ def module_page(request, module):
             'page_title': MODULES[module]['title'],
             'module_description': MODULES[module]['description'],
             'form': form,
+            'spby_form': spby_form,
             'kwitansi_list': kwitansi_list,
+            'spby_list': spby_list,
         }
         return render(request, 'dokumen/kwitansi_list.html', context)
 

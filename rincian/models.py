@@ -61,6 +61,22 @@ class RincianBiayaItem(models.Model):
         max_length=255
     )
 
+    satuan = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    jumlah_satuan = models.PositiveIntegerField(
+        default=1
+    )
+
+    harga_satuan = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
     jumlah = models.DecimalField(
         max_digits=12,
         decimal_places=2
@@ -81,6 +97,11 @@ class RincianBiayaItem(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+    
+    def save(self, *args, **kwargs):
+        if self.harga_satuan and self.jumlah_satuan:
+            self.jumlah = self.harga_satuan * self.jumlah_satuan
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.get_jenis_biaya_display()} - {self.jumlah}"

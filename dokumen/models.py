@@ -109,3 +109,40 @@ class KwitansiSakti(models.Model):
 
     def __str__(self):
         return self.nomor_kwitansi
+
+
+class SPBY(models.Model):
+
+    sppd = models.ForeignKey(
+        SPPD,
+        on_delete=models.CASCADE,
+        related_name='spby_list'
+    )
+
+    nomor_spby = models.CharField(
+        max_length=100
+    )
+
+    file_pdf = models.FileField(
+        upload_to='spby/',
+        blank=True,
+        null=True
+    )
+
+    uploaded_by = models.ForeignKey(
+        Pegawai,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.nomor_spby

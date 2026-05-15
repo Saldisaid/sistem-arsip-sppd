@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('accounts.urls')),
+    path('', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('developer-admin/', admin.site.urls),
     path('sppd/', include('sppd.urls')),
     path('rincian/', include('rincian.urls')),

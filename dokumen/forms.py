@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Dokumen, KwitansiSakti
+from .models import Dokumen, KwitansiSakti, SPBY
 
 
 class DokumenUploadForm(forms.ModelForm):
@@ -52,6 +52,34 @@ class KwitansiSaktiForm(forms.ModelForm):
         }
         widgets = {
             'nomor_kwitansi': forms.TextInput(attrs={'placeholder': 'Contoh: KWT-001/2026'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field_class = (
+            'min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 '
+            'text-slate-900 outline-none focus:border-[#660300] focus:ring-2 focus:ring-[#660300]/10'
+        )
+        for field in self.fields.values():
+            field.widget.attrs['class'] = field_class
+        self.fields['file_pdf'].widget.attrs['accept'] = 'application/pdf'
+
+
+class SPBYForm(forms.ModelForm):
+    class Meta:
+        model = SPBY
+        fields = (
+            'sppd',
+            'nomor_spby',
+            'file_pdf',
+        )
+        labels = {
+            'sppd': 'SPPD',
+            'nomor_spby': 'Nomor SPBY',
+            'file_pdf': 'File PDF',
+        }
+        widgets = {
+            'nomor_spby': forms.TextInput(attrs={'placeholder': 'Contoh: SPBY-001/2026'}),
         }
 
     def __init__(self, *args, **kwargs):

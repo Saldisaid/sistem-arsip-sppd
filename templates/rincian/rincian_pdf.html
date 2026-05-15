@@ -1,0 +1,583 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Rincian Biaya Perjalanan Dinas
+    </title>
+
+    <style>
+
+        @page {
+
+            size: F4 portrait;
+            margin: 0.5cm;
+        }
+
+        body {
+
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            color: #000;
+        }
+
+        table {
+
+            border-collapse: collapse;
+        }
+
+        .wrapper {
+
+            width: 100%;
+        }
+
+        /* ================= HEADER ================= */
+
+        .logo {
+
+            text-align: center;
+            margin-bottom: 3px;
+        }
+
+        .logo img {
+
+            width: 55px;
+            height: 55px;
+        }
+
+        .judul {
+
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .judul h1 {
+
+            margin: 0;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .judul h2 {
+
+            margin: 2px 0;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .judul h3 {
+
+            margin-top: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* ================= META ================= */
+
+        .meta {
+
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .meta td {
+
+            padding: 1px 3px;
+            vertical-align: top;
+        }
+
+        .label {
+
+            width: 130px;
+        }
+
+        /* ================= TABEL ================= */
+
+        .main-table {
+
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            font-size: 8.5px;
+        }
+
+        .main-table th,
+        .main-table td {
+
+            border: 1px solid #000;
+            padding: 1px 4px;
+            vertical-align: top;
+        }
+
+        .main-table th {
+
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .center {
+
+            text-align: center;
+        }
+
+        .right {
+
+            text-align: right;
+        }
+
+        .bold {
+
+            font-weight: bold;
+        }
+
+        /* ================= TTD ================= */
+
+        .section {
+
+            margin-top: 10px;
+        }
+
+        .ttd-table {
+
+            width: 100%;
+        }
+
+        .ttd-table td {
+
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .ttd-box {
+
+            margin-top: 35px;
+        }
+
+        .nama {
+
+            display: inline-block;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+            min-width: 130px;
+        }
+
+        /* ================= RAMPUNG ================= */
+
+        .rampung {
+
+            margin-top: 10px;
+        }
+
+        .rampung-title {
+
+            text-align: center;
+            font-weight: bold;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 3px;
+            margin-bottom: 5px;
+        }
+
+        .rampung-table {
+
+            width: 100%;
+        }
+
+        .rampung-table td {
+
+            padding: 1px 3px;
+        }
+
+        /* ================= PEJABAT ================= */
+
+        .pejabat {
+
+            margin-top: 20px;
+            text-align: right;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- ================= LOGO ================= -->
+
+    <div class="logo">
+
+        <img src="{% static 'images/kpu-logo.png' %}">
+
+    </div>
+
+    <!-- ================= JUDUL ================= -->
+
+    <div class="judul">
+
+        <h1>
+            KOMISI PEMILIHAN UMUM
+        </h1>
+
+        <h2>
+            KABUPATEN TOLITOLI
+        </h2>
+
+        <h3>
+            RINCIAN BIAYA PERJALANAN DINAS
+        </h3>
+
+    </div>
+
+    <!-- ================= META ================= -->
+
+    <table class="meta">
+
+        <tr>
+
+            <td class="label">
+                Lampiran SPD Nomor
+            </td>
+
+            <td>
+                :
+            </td>
+
+            <td>
+
+                {{ sppd_pegawai.sppd.nomor_surat_tugas }}
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td class="label">
+                Tanggal
+            </td>
+
+            <td>
+                :
+            </td>
+
+            <td>
+
+                {{ sppd_pegawai.sppd.tanggal_berangkat|date:"d F Y" }}
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <!-- ================= TABEL RINCIAN ================= -->
+
+    <table class="main-table">
+
+        <thead>
+
+            <tr>
+
+                <th style="width:5%;">
+                    No.
+                </th>
+
+                <th>
+                    PERINCIAN BIAYA
+                </th>
+
+                <th style="width:25%; text-align:center;">
+                    JUMLAH
+                </th>
+
+                <th style="width:20%;">
+                    KETERANGAN
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% regroup item_list by jenis_biaya as grouped_items %}
+            {% for group in grouped_items %}
+
+            <!-- HEADER KATEGORI -->
+
+            <tr>
+
+                <td class="center">
+
+                    {{ forloop.counter }}
+
+                </td>
+
+                <td>
+
+                    <strong>
+
+                        {{ group.list.0.get_jenis_biaya_display }}
+
+                    </strong>
+
+                </td>
+
+                <td>
+
+                </td>
+
+                <td>
+
+                </td>
+
+            </tr>
+
+            <!-- SUB ITEM -->
+
+            {% for item in group.list %}
+
+            <tr>
+
+                <td>
+
+                </td>
+
+                <td style="padding-left:18px;">
+
+                    {% if item.jumlah_satuan > 1 %}
+                        {{ item.jumlah_satuan }}x 
+                    {% endif %}
+
+                    {{ item.uraian }}
+
+                    <div style="text-align:right;">
+                        Rp. {{ item.harga_satuan }}
+                    </div>
+                </td>
+
+                <td class="right">
+
+                    Rp. {{ item.jumlah|floatformat:0 }}
+
+                </td>
+
+                <td>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            {% endfor %}
+
+            <!-- TOTAL -->
+
+            <tr>
+
+                <td colspan="2" class="left bold">
+
+                    JUMLAH :
+
+                </td>
+
+                <td class="right bold">
+
+                    Rp. {{ total|floatformat:0 }}
+
+                </td>
+
+                <td>
+
+                </td>
+
+            </tr>
+
+            <!-- TERBILANG -->
+
+            <tr>
+
+                <td colspan="4">
+
+                    <strong>
+                        TERBILANG :
+                    </strong>
+
+                    {{ total|floatformat:0 }} Rupiah
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <!-- ================= TTD ================= -->
+
+    <div class="section">
+
+        <table class="ttd-table">
+
+            <tr>
+
+                <!-- BENDAHARA -->
+
+                <td>
+
+                    Telah di bayar sejumlah
+
+                    <br>
+
+                    Rp. {{ total|floatformat:0 }}
+
+                    <div class="ttd-box">
+
+                        Bendahara Pengeluaran
+
+                        <br><br><br><br>
+
+                        <span class="nama">
+
+                            AFRIZAL
+
+                        </span>
+
+                    </div>
+
+                </td>
+
+                <!-- PENERIMA -->
+
+                <td style="text-align:right;">
+
+                    Tolitoli,
+                    {{ sppd_pegawai.sppd.tanggal_berangkat|date:"d F Y" }}
+
+                    <br>
+
+                    Telah menerima jumlah uang sebesar
+
+                    <br>
+
+                    Rp. {{ total|floatformat:0 }}
+
+                    <div class="ttd-box">
+
+                        Yang Menerima
+
+                        <br><br><br><br>
+
+                        <span class="nama">
+
+                            {{ sppd_pegawai.pegawai.user.get_full_name }}
+
+                        </span>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- ================= SPD RAMPUNG ================= -->
+
+    <div class="rampung">
+
+        <div class="rampung-title">
+
+            PERHITUNGAN SPD RAMPUNG
+
+        </div>
+
+        <table class="rampung-table">
+
+            <tr>
+
+                <td>
+                    Ditetapkan sejumlah
+                </td>
+
+                <td>
+                    :
+                </td>
+
+                <td class="right">
+                    Rp. {{ total|floatformat:0 }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+                    Yang telah dibayar semula
+                </td>
+
+                <td>
+                    :
+                </td>
+
+                <td class="right">
+                    Rp. {{ total|floatformat:0 }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+                    Sisa kurang/lebih
+                </td>
+
+                <td>
+                    :
+                </td>
+
+                <td class="right">
+                    Rp. 0
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- ================= PEJABAT ================= -->
+
+    <div class="pejabat">
+
+        Pejabat Pembuat Komitmen
+
+        <br><br><br><br>
+
+        <span class="nama">
+
+            {{ penandatangan.user.get_full_name }}
+
+        </span>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

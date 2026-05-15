@@ -159,6 +159,8 @@ class RincianBiayaItemForm(forms.ModelForm):
         fields = (
             'jenis_biaya',
             'uraian',
+            'jumlah_satuan',
+            'harga_satuan',
             'jumlah',
             'wajib_upload',
             'jumlah_dokumen',
@@ -166,14 +168,18 @@ class RincianBiayaItemForm(forms.ModelForm):
         labels = {
             'jenis_biaya': 'Jenis Biaya',
             'uraian': 'Uraian',
-            'jumlah': 'Jumlah',
+            'jumlah_satuan': 'Jumlah',
+            'harga_satuan': 'Harga Satuan',
+            'jumlah': 'Total',
             'wajib_upload': 'Wajib Upload Bukti',
             'jumlah_dokumen': 'Jumlah Dokumen Wajib',
         }
         widgets = {
             'uraian': forms.TextInput(attrs={'placeholder': 'Contoh: Tiket pesawat Palu - Tolitoli'}),
-            'jumlah': forms.NumberInput(attrs={'min': '0', 'step': '0.01'}),
+            'jumlah': forms.NumberInput(attrs={'min': '0', 'step': '0.01', 'readonly': 'readonly', 'id': 'id_total'}),
             'jumlah_dokumen': forms.NumberInput(attrs={'min': '0'}),
+            'jumlah_satuan': forms.NumberInput(attrs={'min': '1', 'id': 'id_jumlah_satuan'}),
+            'harga_satuan': forms.NumberInput(attrs={'min': '0', 'step': '0.01', 'id': 'id_harga_satuan'}),
         }
 
     def __init__(self, *args, **kwargs):
