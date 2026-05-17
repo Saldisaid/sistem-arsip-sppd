@@ -1,51 +1,48 @@
 {% extends "base_admin.html" %}
 
 {% block content %}
-<section class="rounded-lg border border-slate-300 bg-white">
- <div class="border-b border-slate-300 px-5 py-4">
- <p class="m-0 mb-2 text-xs font-bold uppercase text-slate-500">Role {{ role_name }}</p>
- <h2 class="m-0 text-2xl font-bold">{{ page_title }}</h2>
- <p class="mt-3 text-slate-600">{{ role_description }}</p>
+<section class="rounded-lg border border-slate-300 bg-white p-5">
+ <div class="flex items-center justify-between">
+  <div>
+   <h2 class="m-0 text-lg font-bold">Cari SPPD</h2>
+   <p class="m-0 mt-1 text-sm text-slate-500">Filter berdasarkan tahun, bulan, atau tujuan.</p>
+  </div>
  </div>
 
- <div class="border-b border-slate-300 px-5 py-4">
-  <p class="mb-3 text-sm font-semibold text-slate-700">Filter</p>
-  <form method="get" class="grid gap-4 sm:grid-cols-4">
+ <form method="get" class="mt-4 grid gap-3 sm:grid-cols-3">
   <div>
-   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Tahun</label>
+   <label class="text-xs text-slate-500">Tahun</label>
    <select name="tahun" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900">
-    <option value="">Semua Tahun</option>
+    <option value="">Semua</option>
     {% for y in filter_years %}
     <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
     {% endfor %}
    </select>
   </div>
   <div>
-   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Bulan</label>
+   <label class="text-xs text-slate-500">Bulan</label>
    <select name="bulan" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900">
-    <option value="">Semua Bulan</option>
+    <option value="">Semua</option>
     {% for m, label in filter_months %}
     <option value="{{ m }}" {% if selected_month == m|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
    </select>
   </div>
   <div>
-   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Tujuan</label>
+   <label class="text-xs text-slate-500">Tujuan</label>
    <input name="tujuan" value="{{ selected_tujuan|default:'' }}" placeholder="Nama tempat atau kota" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" />
   </div>
-  <div class="flex items-end gap-2">
-   <button type="submit" class="min-h-11 flex-1 rounded-lg bg-[#660300] px-4 py-2 text-white font-semibold">Filter</button>
-   <a href="{% url 'sppd:operator_dashboard' %}" class="min-h-11 inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700">Reset</a>
+  <div class="sm:col-span-3 flex gap-2">
+   <button type="submit" class="rounded-lg bg-[#660300] px-4 py-2 text-white">Cari</button>
+   <a href="{% url 'sppd:search' %}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Reset</a>
   </div>
  </form>
 
- <div class="overflow-x-auto">
+ <div class="overflow-x-auto mt-4">
   <table class="w-full border-collapse">
    <thead>
     <tr>
      <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor ST</th>
-     <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Nomor SPPD</th>
-     <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Pegawai SPPD</th>
      <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tujuan</th>
      <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Tanggal</th>
      <th class="whitespace-nowrap border-b border-slate-300 bg-slate-50 px-5 py-3 text-left text-xs uppercase text-slate-500">Aksi</th>
@@ -55,30 +52,15 @@
     {% for item in sppd_list %}
     <tr>
      <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3 font-medium">{{ item.nomor_surat_tugas }}</td>
-     <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.nomor_sppd|default:"-" }}</td>
-     <td class="border-b border-slate-300 px-5 py-3">
-      <div class="flex flex-wrap gap-1.5">
-       {% for peserta in item.pegawai_list.all %}
-       <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ peserta.pegawai }}</span>
-       {% empty %}
-       <span class="text-sm text-slate-500">Belum ada pegawai</span>
-       {% endfor %}
-      </div>
-     </td>
      <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.tujuan }}</td>
      <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.tanggal_berangkat|date:"d M Y" }} - {{ item.tanggal_kembali|date:"d M Y" }}</td>
      <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">
-      <a class="inline-flex items-center justify-center rounded-lg p-2 text-[#660300] hover:bg-slate-100" href="{% url 'sppd:sppd_detail' item.id %}" title="Lihat Detail">
-       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-       </svg>
-      </a>
+      <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'sppd:sppd_detail' item.id %}">Detail</a>
      </td>
     </tr>
     {% empty %}
     <tr>
-     <td class="p-5 text-slate-500" colspan="6">Belum ada data SPPD untuk filter ini.</td>
+     <td class="p-5 text-slate-500" colspan="4">Tidak ada hasil untuk filter ini.</td>
     </tr>
     {% endfor %}
    </tbody>
@@ -87,7 +69,7 @@
 
  <!-- Pagination -->
  {% if page_obj %}
- <div class="flex flex-col items-center justify-between gap-4 border-t border-slate-300 px-5 py-4 sm:flex-row">
+ <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-slate-300 pt-4 sm:flex-row">
   <div class="text-sm text-slate-600">
    Halaman <strong>{{ page_obj.number }}</strong> dari <strong>{{ page_obj.paginator.num_pages }}</strong>
    <span class="ml-2">(Total: <strong>{{ page_obj.paginator.count }}</strong> data)</span>

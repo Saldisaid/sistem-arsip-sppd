@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -38,17 +39,128 @@ def get_menimbang_formset_with_defaults(data=None, prefix='menimbang'):
 @login_required
 @user_passes_test(is_admin_user)
 def sppd_list(request):
-    sppd_list_data = (
+    """List SPPD with optional filters for year, month, and tujuan."""
+    qs = (
         SPPD.objects
         .select_related('created_by__user')
         .prefetch_related('pegawai_list__pegawai__user')
         .order_by('-created_at')
     )
+
+    tahun = request.GET.get('tahun')
+    bulan = request.GET.get('bulan')
+    tujuan = request.GET.get('tujuan')
+
+    if tahun:
+        try:
+            qs = qs.filter(tanggal_berangkat__year=int(tahun))
+        except ValueError:
+            pass
+
+    if bulan:
+        try:
+            qs = qs.filter(tanggal_berangkat__month=int(bulan))
+        except ValueError:
+            pass
+
+    if tujuan:
+        qs = qs.filter(tujuan__icontains=tujuan)
+
+    # available years for filter dropdown
+    years_qs = SPPD.objects.dates('tanggal_berangkat', 'year', order='DESC')
+    years = [d.year for d in years_qs]
+
+    months = [
+        (1, 'Januari'), (2, 'Februari'), (3, 'Maret'), (4, 'April'),
+        (5, 'Mei'), (6, 'Juni'), (7, 'Juli'), (8, 'Agustus'),
+        (9, 'September'), (10, 'Oktober'), (11, 'November'), (12, 'Desember'),
+    ]
+
+    # Pagination
+    paginator = Paginator(qs, 15)
+    page_number = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        page_obj = paginator.page(1)
+
     context = {
         'page_title': 'Data SPPD',
-        'sppd_list': sppd_list_data,
+        'sppd_list': page_obj.object_list,
+        'page_obj': page_obj,
+        'filter_years': years,
+        'filter_months': months,
+        'selected_year': tahun,
+        'selected_month': bulan,
+        'selected_tujuan': tujuan,
     }
     return render(request, 'sppd/sppd_list.html', context)
+
+
+@login_required
+def sppd_search(request):
+    """Search/filter SPPD across roles by year, month, and tujuan."""
+    role = get_user_role(request.user)
+
+    qs = (
+        SPPD.objects
+        .select_related('created_by__user')
+        .prefetch_related('pegawai_list__pegawai__user')
+        .order_by('-created_at')
+    )
+
+    # If regular user, limit to SPPD where user is a participant
+    if role == 'user':
+        qs = qs.filter(pegawai_list__pegawai=request.user.pegawai).distinct()
+
+    tahun = request.GET.get('tahun')
+    bulan = request.GET.get('bulan')
+    tujuan = request.GET.get('tujuan')
+
+    if tahun:
+        try:
+            qs = qs.filter(tanggal_berangkat__year=int(tahun))
+        except ValueError:
+            pass
+
+    if bulan:
+        try:
+            qs = qs.filter(tanggal_berangkat__month=int(bulan))
+        except ValueError:
+            pass
+
+    if tujuan:
+        qs = qs.filter(tujuan__icontains=tujuan)
+
+    # available years for filter
+    years_qs = SPPD.objects.dates('tanggal_berangkat', 'year', order='DESC')
+    years = [d.year for d in years_qs]
+
+    months = [
+        (1, 'Januari'), (2, 'Februari'), (3, 'Maret'), (4, 'April'),
+        (5, 'Mei'), (6, 'Juni'), (7, 'Juli'), (8, 'Agustus'),
+        (9, 'September'), (10, 'Oktober'), (11, 'November'), (12, 'Desember'),
+    ]
+
+    # Pagination
+    paginator = Paginator(qs, 15)
+    page_number = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        page_obj = paginator.page(1)
+
+    context = {
+        'page_title': 'Cari SPPD',
+        'sppd_list': page_obj.object_list,
+        'page_obj': page_obj,
+        'filter_years': years,
+        'filter_months': months,
+        'selected_year': tahun,
+        'selected_month': bulan,
+        'selected_tujuan': tujuan,
+    }
+    return render(request, 'sppd/sppd_search.html', context)
 
 
 @login_required
@@ -185,10 +297,61 @@ def operator_dashboard(request):
     if get_user_role(request.user) != 'operator':
         return redirect(get_role_redirect_url(request.user) or 'accounts:login')
 
+    qs = (
+        SPPD.objects
+        .select_related('created_by__user')
+        .prefetch_related('pegawai_list__pegawai__user')
+        .order_by('-created_at')
+    )
+
+    tahun = request.GET.get('tahun')
+    bulan = request.GET.get('bulan')
+    tujuan = request.GET.get('tujuan')
+
+    if tahun:
+        try:
+            qs = qs.filter(tanggal_berangkat__year=int(tahun))
+        except ValueError:
+            pass
+
+    if bulan:
+        try:
+            qs = qs.filter(tanggal_berangkat__month=int(bulan))
+        except ValueError:
+            pass
+
+    if tujuan:
+        qs = qs.filter(tujuan__icontains=tujuan)
+
+    # available years for filter dropdown
+    years_qs = SPPD.objects.dates('tanggal_berangkat', 'year', order='DESC')
+    years = [d.year for d in years_qs]
+
+    months = [
+        (1, 'Januari'), (2, 'Februari'), (3, 'Maret'), (4, 'April'),
+        (5, 'Mei'), (6, 'Juni'), (7, 'Juli'), (8, 'Agustus'),
+        (9, 'September'), (10, 'Oktober'), (11, 'November'), (12, 'Desember'),
+    ]
+
+    # Pagination
+    paginator = Paginator(qs, 15)
+    page_number = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        page_obj = paginator.page(1)
+
     context = {
         'page_title': 'Dashboard Operator',
         'role_name': 'Operator',
         'role_description': 'Operator akan menginput dan memperbarui data operasional SPPD sesuai kewenangannya.',
+        'sppd_list': page_obj.object_list,
+        'page_obj': page_obj,
+        'filter_years': years,
+        'filter_months': months,
+        'selected_year': tahun,
+        'selected_month': bulan,
+        'selected_tujuan': tujuan,
     }
     return render(request, 'sppd/role_dashboard.html', context)
 
@@ -205,13 +368,57 @@ def user_dashboard(request):
         .filter(pegawai=request.user.pegawai)
         .order_by('-sppd__tanggal_berangkat')
     )
-    for perjalanan in perjalanan_list:
+
+    tahun = request.GET.get('tahun')
+    bulan = request.GET.get('bulan')
+    tujuan = request.GET.get('tujuan')
+
+    if tahun:
+        try:
+            perjalanan_list = perjalanan_list.filter(sppd__tanggal_berangkat__year=int(tahun))
+        except ValueError:
+            pass
+
+    if bulan:
+        try:
+            perjalanan_list = perjalanan_list.filter(sppd__tanggal_berangkat__month=int(bulan))
+        except ValueError:
+            pass
+
+    if tujuan:
+        perjalanan_list = perjalanan_list.filter(sppd__tujuan__icontains=tujuan)
+
+    # Pagination
+    paginator = Paginator(perjalanan_list, 15)
+    page_number = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        page_obj = paginator.page(1)
+
+    for perjalanan in page_obj.object_list:
         perjalanan.kelengkapan_progress = get_kelengkapan_progress(perjalanan)
+
+    # available years for filter dropdown
+    years_qs = SPPD.objects.dates('tanggal_berangkat', 'year', order='DESC')
+    years = [d.year for d in years_qs]
+
+    months = [
+        (1, 'Januari'), (2, 'Februari'), (3, 'Maret'), (4, 'April'),
+        (5, 'Mei'), (6, 'Juni'), (7, 'Juli'), (8, 'Agustus'),
+        (9, 'September'), (10, 'Oktober'), (11, 'November'), (12, 'Desember'),
+    ]
 
     context = {
         'page_title': 'Dashboard User',
         'role_name': 'User',
         'role_description': 'User akan melihat SPPD pribadi dan mengunggah dokumen pendukung sesuai perjalanan dinasnya.',
-        'perjalanan_list': perjalanan_list,
+        'perjalanan_list': page_obj.object_list,
+        'page_obj': page_obj,
+        'filter_years': years,
+        'filter_months': months,
+        'selected_year': tahun,
+        'selected_month': bulan,
+        'selected_tujuan': tujuan,
     }
     return render(request, 'sppd/user_dashboard.html', context)

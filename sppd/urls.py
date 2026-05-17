@@ -7,6 +7,7 @@ app_name = 'sppd'
 
 urlpatterns = [
     path('', views.sppd_list, name='sppd'),
+    path('search/', views.sppd_search, name='search'),
     path('tambah/', views.sppd_create, name='sppd_create'),
     path('<int:sppd_id>/', views.sppd_detail, name='sppd_detail'),
     path('<int:sppd_id>/hapus/', views.sppd_delete, name='sppd_delete'),

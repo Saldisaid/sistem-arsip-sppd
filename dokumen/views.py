@@ -12,7 +12,7 @@ from accounts.permissions import get_role_redirect_url, get_user_role, is_admin_
 from rincian.models import RincianBiayaItem
 from sppd.models import SPPDPegawai
 from .forms import DokumenUploadForm, KwitansiSaktiForm, SPBYForm
-from .models import Dokumen, KwitansiSakti, SPBY
+from .models import Dokumen, KwitansiSakti, SPBY, generate_dokumen_filename
 from .services import get_kelengkapan_progress, update_status_kelengkapan
 
 
@@ -217,6 +217,28 @@ def download_dokumen(request, dokumen_id):
 
 
 @login_required
+def delete_dokumen(request, dokumen_id):
+    dokumen = get_object_or_404(
+        Dokumen.objects.select_related('sppd_pegawai__sppd', 'sppd_pegawai__pegawai__user', 'uploaded_by__user'),
+        id=dokumen_id,
+    )
+    role = get_user_role(request.user)
+
+    if role != 'user' or dokumen.uploaded_by != request.user.pegawai:
+        return redirect(get_role_redirect_url(request.user) or 'accounts:login')
+
+    if request.method == 'POST':
+        sppd_pegawai = dokumen.sppd_pegawai
+        dokumen.file.delete(save=False)
+        dokumen.delete()
+        update_status_kelengkapan(sppd_pegawai)
+        messages.success(request, 'Dokumen berhasil dihapus.')
+        return redirect('dokumen:user_sppd_detail', sppd_pegawai_id=sppd_pegawai.id)
+
+    return redirect('dokumen:user_sppd_detail', sppd_pegawai_id=dokumen.sppd_pegawai.id)
+
+
+@login_required
 def user_upload_dokumen(request, sppd_pegawai_id, rincian_item_id=None):
     if get_user_role(request.user) != 'user':
         return redirect(get_role_redirect_url(request.user) or 'accounts:login')
@@ -253,7 +275,7 @@ def user_upload_dokumen(request, sppd_pegawai_id, rincian_item_id=None):
             dokumen.uploaded_by = request.user.pegawai
             converted_file, file_name, converted_to_pdf = convert_image_upload_to_pdf(dokumen.file)
             dokumen.file = converted_file
-            dokumen.nama_file = file_name
+            dokumen.nama_file = generate_dokumen_filename(dokumen, file_name)
             dokumen.save()
             update_status_kelengkapan(sppd_pegawai)
             if converted_to_pdf:

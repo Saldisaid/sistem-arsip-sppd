@@ -1,7 +1,36 @@
+from pathlib import Path
+
 from django.db import models
+from django.utils import timezone
+from django.utils.text import slugify
+
 from rincian.models import RincianBiayaItem
 from sppd.models import SPPD, SPPDPegawai
 from accounts.models import Pegawai
+
+
+def generate_dokumen_filename(instance, original_filename):
+    suffix = Path(original_filename).suffix.lower() or '.pdf'
+    jenis_key = getattr(instance, 'jenis_dokumen', None) or 'lainnya'
+    if jenis_key not in dict(Dokumen.JENIS_DOKUMEN):
+        jenis_key = 'dokumen'
+
+    sppd_pegawai = getattr(instance, 'sppd_pegawai', None)
+    sppd_nomor = None
+    if sppd_pegawai is not None:
+        sppd_nomor = getattr(getattr(sppd_pegawai, 'sppd', None), 'nomor_surat_tugas', None)
+        if not sppd_nomor:
+            sppd_nomor = f'sppd-{sppd_pegawai.id}'
+    if not sppd_nomor:
+        sppd_nomor = 'sppd'
+
+    timestamp = timezone.localtime(timezone.now()).strftime('%Y%m%d%H%M%S')
+    safe_name = slugify(f'{sppd_nomor}_{jenis_key}_{timestamp}', allow_unicode=False)
+    return f'{safe_name}{suffix}'
+
+
+def dokumen_file_upload_to(instance, filename):
+    return f'dokumen/{generate_dokumen_filename(instance, filename)}'
 
 
 class Dokumen(models.Model):
@@ -41,7 +70,7 @@ class Dokumen(models.Model):
     )
 
     file = models.FileField(
-        upload_to='dokumen/'
+        upload_to=dokumen_file_upload_to
     )
 
     nama_file = models.CharField(

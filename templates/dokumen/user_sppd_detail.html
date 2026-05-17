@@ -39,6 +39,7 @@
  {% if can_upload %}
  <a class="inline-grid min-h-10 place-items-center rounded-lg bg-[#660300] px-4 text-sm font-bold text-white hover:bg-[#4f0200]" href="{% url 'dokumen:user_upload_dokumen_umum' sppd_pegawai.id %}">Upload Dokumen Lain</a>
  {% endif %}
+ <a class="inline-grid min-h-10 place-items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" href="{% url 'rincian:rincian_download' sppd_pegawai.id %}">Download Rincian</a>
  </div>
  <div class="overflow-x-auto">
  <table class="w-full border-collapse">
@@ -58,9 +59,21 @@
  <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.uraian }}</td>
  <td class="whitespace-nowrap border-b border-slate-300 px-5 py-3">{{ item.jumlah_dokumen }}</td>
  <td class="border-b border-slate-300 px-5 py-3">
- <div class="grid gap-1">
+ <div class="grid gap-2">
  {% for dokumen in item.dokumen_list.all %}
+ <div class="flex flex-wrap items-center gap-2">
  <a class="text-sm font-bold text-[#660300] hover:text-[#660300]" href="{% url 'dokumen:download_dokumen' dokumen.id %}">{{ dokumen.nama_file|default:dokumen.file.name }}</a>
+ {% if can_upload and dokumen.uploaded_by == request.user.pegawai %}
+ <form method="post" action="{% url 'dokumen:delete_dokumen' dokumen.id %}" class="inline">
+ {% csrf_token %}
+ <button type="submit" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-800" aria-label="Hapus dokumen">
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+ <path d="M9 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1h5a1 1 0 1 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5H3a1 1 0 1 1 0-2h5zm1 2v12h2V5H10zm4 0v12h2V5h-2z" />
+ </svg>
+ </button>
+ </form>
+ {% endif %}
+ </div>
  {% empty %}
  <span class="text-sm text-slate-500">Belum upload</span>
  {% endfor %}
@@ -90,7 +103,19 @@
  </div>
  <div class="grid divide-y divide-slate-300">
  {% for dokumen in dokumen_umum %}
- <a class="px-5 py-3 font-bold text-[#660300] hover:bg-slate-50" href="{% url 'dokumen:download_dokumen' dokumen.id %}">{{ dokumen.get_jenis_dokumen_display }} - {{ dokumen.nama_file|default:dokumen.file.name }}</a>
+ <div class="flex items-center justify-between gap-4 px-5 py-3">
+ <a class="font-bold text-[#660300] hover:text-[#660300]" href="{% url 'dokumen:download_dokumen' dokumen.id %}">{{ dokumen.get_jenis_dokumen_display }} - {{ dokumen.nama_file|default:dokumen.file.name }}</a>
+ {% if can_upload and dokumen.uploaded_by == request.user.pegawai %}
+ <form method="post" action="{% url 'dokumen:delete_dokumen' dokumen.id %}" class="inline">
+ {% csrf_token %}
+ <button type="submit" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-800" aria-label="Hapus dokumen">
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+ <path d="M9 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1h5a1 1 0 1 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5H3a1 1 0 1 1 0-2h5zm1 2v12h2V5H10zm4 0v12h2V5h-2z" />
+ </svg>
+ </button>
+ </form>
+ {% endif %}
+ </div>
  {% empty %}
  <p class="m-0 p-5 text-slate-500">Belum ada dokumen lain.</p>
  {% endfor %}

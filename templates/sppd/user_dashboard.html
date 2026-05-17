@@ -6,6 +6,38 @@
  <h2 class="m-0 text-lg font-bold">Perjalanan Dinas Saya</h2>
  <p class="m-0 mt-1 text-sm text-slate-500">Daftar SPPD yang ditugaskan kepada akun ini.</p>
  </div>
+
+ <div class="border-b border-slate-300 px-5 py-4">
+  <p class="mb-3 text-sm font-semibold text-slate-700">Filter</p>
+  <form method="get" class="grid gap-4 sm:grid-cols-4">
+  <div>
+   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Tahun</label>
+   <select name="tahun" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900">
+    <option value="">Semua Tahun</option>
+    {% for y in filter_years %}
+    <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+    {% endfor %}
+   </select>
+  </div>
+  <div>
+   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Bulan</label>
+   <select name="bulan" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900">
+    <option value="">Semua Bulan</option>
+    {% for m, label in filter_months %}
+    <option value="{{ m }}" {% if selected_month == m|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+   </select>
+  </div>
+  <div>
+   <label class="mb-1.5 block text-xs font-semibold text-slate-600">Tujuan</label>
+   <input name="tujuan" value="{{ selected_tujuan|default:'' }}" placeholder="Nama tempat atau kota" class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" />
+  </div>
+  <div class="flex items-end gap-2">
+   <button type="submit" class="min-h-11 flex-1 rounded-lg bg-[#660300] px-4 py-2 text-white font-semibold">Filter</button>
+   <a href="{% url 'sppd:user_dashboard' %}" class="min-h-11 inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700">Reset</a>
+  </div>
+ </form>
+
  <div class="overflow-x-auto">
  <table class="w-full border-collapse">
  <thead>
@@ -50,5 +82,35 @@
  </tbody>
  </table>
  </div>
+
+ <!-- Pagination -->
+ {% if page_obj %}
+ <div class="flex flex-col items-center justify-between gap-4 border-t border-slate-300 px-5 py-4 sm:flex-row">
+  <div class="text-sm text-slate-600">
+   Halaman <strong>{{ page_obj.number }}</strong> dari <strong>{{ page_obj.paginator.num_pages }}</strong>
+   <span class="ml-2">(Total: <strong>{{ page_obj.paginator.count }}</strong> data)</span>
+  </div>
+  <nav class="flex flex-wrap items-center gap-2">
+   {% if page_obj.has_previous %}
+   <a href="?page=1{% if selected_year %}&tahun={{ selected_year }}{% endif %}{% if selected_month %}&bulan={{ selected_month }}{% endif %}{% if selected_tujuan %}&tujuan={{ selected_tujuan }}{% endif %}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Pertama</a>
+   <a href="?page={{ page_obj.previous_page_number }}{% if selected_year %}&tahun={{ selected_year }}{% endif %}{% if selected_month %}&bulan={{ selected_month }}{% endif %}{% if selected_tujuan %}&tujuan={{ selected_tujuan }}{% endif %}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">← Sebelumnya</a>
+   {% endif %}
+
+   <!-- Page numbers -->
+   {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <span class="rounded-lg bg-[#660300] px-3 py-2 text-sm font-bold text-white">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    <a href="?page={{ num }}{% if selected_year %}&tahun={{ selected_year }}{% endif %}{% if selected_month %}&bulan={{ selected_month }}{% endif %}{% if selected_tujuan %}&tujuan={{ selected_tujuan }}{% endif %}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">{{ num }}</a>
+    {% endif %}
+   {% endfor %}
+
+   {% if page_obj.has_next %}
+   <a href="?page={{ page_obj.next_page_number }}{% if selected_year %}&tahun={{ selected_year }}{% endif %}{% if selected_month %}&bulan={{ selected_month }}{% endif %}{% if selected_tujuan %}&tujuan={{ selected_tujuan }}{% endif %}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Selanjutnya →</a>
+   <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_year %}&tahun={{ selected_year }}{% endif %}{% if selected_month %}&bulan={{ selected_month }}{% endif %}{% if selected_tujuan %}&tujuan={{ selected_tujuan }}{% endif %}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Terakhir</a>
+   {% endif %}
+  </nav>
+ </div>
+ {% endif %}
 </section>
 {% endblock %}
